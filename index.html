@@ -19,13 +19,14 @@
     --bgD:rgba(120,255,220,.06);
 
     --fg:rgba(255,255,255,.94);
-    --muted:rgba(255,255,255,.68);
-    --soft:rgba(255,255,255,.12);
-    --stroke:rgba(255,255,255,.14);
-    --shadow:0 12px 28px rgba(0,0,0,.28);
+    --muted:rgba(255,255,255,.66);
+    --soft:rgba(255,255,255,.10);
+    --stroke:rgba(255,255,255,.12);
 
     --accent:rgba(140,180,255,1);
     --accent2:rgba(150,255,220,1);
+
+    --shadow:0 12px 28px rgba(0,0,0,.26);
 
     --r:16px;
     --r2:14px;
@@ -33,6 +34,7 @@
 
   *{ box-sizing:border-box }
   html,body{ width:100%; height:100%; margin:0; }
+
   body{
     overflow:hidden;
     color:var(--fg);
@@ -53,8 +55,8 @@
 
   .mist{
     position:fixed; inset:-80px; z-index:0; pointer-events:none;
-    filter: blur(24px);
-    opacity:.45;
+    filter: blur(22px);
+    opacity:.42;
     background:
       radial-gradient(900px 480px at 15% 15%, color-mix(in srgb, var(--accent) 46%, transparent), transparent 62%),
       radial-gradient(900px 480px at 92% 8%, color-mix(in srgb, var(--accent2) 42%, transparent), transparent 62%);
@@ -66,10 +68,8 @@
     height:100vh;
     height:100svh;
     height:100dvh;
-    display:grid;
-    grid-template-rows: 1fr;
     overflow:hidden;
-    padding: 6px;
+    padding:6px;
   }
 
   .rotateHint{
@@ -94,91 +94,24 @@
   }
 
   .board{
-    position:relative;
-    overflow:hidden;
-    border-radius:20px;
-    border:1px solid rgba(255,255,255,.12);
-    background:
-      radial-gradient(900px 500px at 10% -10%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%),
-      radial-gradient(900px 500px at 110% 10%, color-mix(in srgb, var(--accent2) 16%, transparent), transparent 60%),
-      linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
-    backdrop-filter: blur(14px) saturate(1.06);
-    -webkit-backdrop-filter: blur(14px) saturate(1.06);
-    box-shadow: var(--shadow);
-    padding: 8px;
+    width:100%;
+    height:100%;
     display:grid;
-    grid-template-rows: auto 1fr;
-    gap:8px;
-    min-height:0;
-  }
-
-  .board::after{
-    content:"";
-    position:absolute; inset:0;
-    pointer-events:none;
-    border-radius:20px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
-    opacity:.5;
-  }
-
-  .meta{
-    display:grid;
-    grid-template-columns: 1fr auto;
-    gap:10px;
-    align-items:start;
-    min-width:0;
-  }
-  .place{
-    min-width:0;
-    font-size:10px;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    color:var(--muted);
-    font-weight:800;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    padding:2px 4px 0 4px;
-  }
-  .metaRight{
-    min-width:0;
-    text-align:right;
-    padding:2px 4px 0 4px;
-  }
-  .updated{
-    font-size:10px;
-    color:var(--muted);
-    font-weight:800;
-    white-space:nowrap;
-  }
-  .headline{
-    margin-top:2px;
-    font-size:10px;
-    color:var(--muted);
-    font-weight:900;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    max-width:320px;
-  }
-
-  .grid{
-    min-height:0;
-    display:grid;
-    grid-template-columns: 1.35fr .82fr .82fr;
-    grid-template-rows: 1fr 1fr 62px;
+    grid-template-columns: 1.28fr .86fr .86fr;
+    grid-template-rows: 1fr 1fr 60px;
     gap: var(--gap);
+    min-height:0;
   }
 
   .card{
     border-radius: var(--r);
     border:1px solid var(--stroke);
     background:
-      radial-gradient(300px 120px at 16% 0%, rgba(255,255,255,.12), transparent 62%),
+      radial-gradient(320px 140px at 16% 0%, rgba(255,255,255,.14), transparent 62%),
       rgba(0,0,0,.08);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 6px 18px rgba(0,0,0,.18);
+    backdrop-filter: blur(10px) saturate(1.05);
+    -webkit-backdrop-filter: blur(10px) saturate(1.05);
+    box-shadow: var(--shadow);
     overflow:hidden;
     min-width:0;
     min-height:0;
@@ -187,12 +120,13 @@
   .now{
     grid-column:1;
     grid-row:1 / span 2;
-    display:grid;
-    grid-template-rows: auto 1fr auto;
     padding:12px;
+    display:grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap:10px;
     background:
-      radial-gradient(420px 160px at 18% -6%, rgba(255,255,255,.18), transparent 62%),
-      radial-gradient(420px 160px at 100% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 62%),
+      radial-gradient(420px 180px at 18% -6%, rgba(255,255,255,.18), transparent 62%),
+      radial-gradient(420px 180px at 100% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 62%),
       rgba(0,0,0,.08);
   }
 
@@ -200,38 +134,44 @@
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
-    gap:10px;
+    gap:8px;
   }
-  .nowLabel{
+  .place{
+    min-width:0;
     font-size:10px;
     letter-spacing:.12em;
     text-transform:uppercase;
     color:var(--muted);
-    font-weight:900;
+    font-weight:850;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
-  .nowMode{
-    font-size:18px;
-    line-height:1;
+  .updated{
+    font-size:10px;
+    color:var(--muted);
+    font-weight:850;
+    white-space:nowrap;
+    text-align:right;
   }
 
-  .tempBlock{
-    align-self:center;
+  .tempRow{
     display:flex;
-    flex-direction:column;
-    gap:6px;
-    min-width:0;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:10px;
   }
-  .tempMain{
+  .tempBlock{
+    min-width:0;
     display:flex;
     align-items:flex-end;
     gap:12px;
-    min-width:0;
   }
   .temp{
     font-size:58px;
     font-weight:950;
     letter-spacing:-0.06em;
-    line-height:.9;
+    line-height:.88;
     white-space:nowrap;
   }
   .feels{
@@ -241,16 +181,26 @@
     white-space:nowrap;
     padding-bottom:8px;
   }
+  .mode{
+    font-size:20px;
+    line-height:1;
+    padding-top:6px;
+  }
+
+  .hero{
+    min-width:0;
+  }
   .heroLine{
     font-size:16px;
-    font-weight:900;
+    font-weight:950;
     letter-spacing:-0.02em;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
   }
   .heroSub{
-    font-size:12px;
+    margin-top:4px;
+    font-size:11px;
     font-weight:800;
     color:var(--muted);
     white-space:nowrap;
@@ -258,11 +208,11 @@
     text-overflow:ellipsis;
   }
 
-  .nowStats{
+  .stats{
     display:grid;
     grid-template-columns: 1fr 1fr;
-    gap:6px 10px;
-    margin-top:8px;
+    gap:8px 10px;
+    align-content:start;
   }
   .stat{
     min-width:0;
@@ -309,8 +259,8 @@
     text-overflow:ellipsis;
   }
 
-  .miniCard{
-    padding:9px 10px;
+  .mini{
+    padding:10px;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -364,29 +314,19 @@
   .protect{ grid-column:2; grid-row:2; }
   .dog{ grid-column:3; grid-row:2; }
 
-  .footer{
-    grid-column:1 / span 3;
-    grid-row:3;
-    display:grid;
-    grid-template-columns: 1.1fr .9fr;
-    gap:8px;
-  }
-
   .bar{
-    border-radius:14px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(0,0,0,.08);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 6px 18px rgba(0,0,0,.14);
+    padding:10px 12px;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:8px;
-    padding:10px 12px;
-    min-width:0;
   }
-  .barLeft{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .barLeft{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
   .barLabel{
     font-size:9px;
     letter-spacing:.11em;
@@ -424,10 +364,13 @@
     flex:0 0 auto;
   }
 
+  .walk{ grid-column:1 / span 2; grid-row:3; }
+  .rain{ grid-column:3; grid-row:3; }
+
   .hidden{ display:none !important; }
 
   @media (max-height: 350px){
-    .grid{ grid-template-rows: 1fr 1fr 56px; }
+    .board{ grid-template-rows: 1fr 1fr 56px; }
     .temp{ font-size:52px; }
     .heroLine{ font-size:15px; }
     .miniValue,.barValue,.statV{ font-size:12px; }
@@ -448,88 +391,80 @@
   </div>
 
   <div class="dash board">
-    <div class="meta">
-      <div class="place" id="placeLine">Local</div>
-      <div class="metaRight">
+    <div class="card now">
+      <div class="nowTop">
+        <div class="place" id="placeLine">Local</div>
         <div class="updated" id="updatedLine">Updated —</div>
-        <div class="headline" id="headlineLine">—</div>
       </div>
+
+      <div class="tempRow">
+        <div class="tempBlock">
+          <div class="temp" id="tempNow">—°</div>
+          <div class="feels" id="feelsNow">feels —°</div>
+        </div>
+        <div class="mode" id="modeIcon">☀️</div>
+      </div>
+
+      <div class="hero">
+        <div class="heroLine" id="heroLine">—</div>
+        <div class="heroSub" id="heroSub">—</div>
+      </div>
+
+      <div class="stats" id="stats"></div>
     </div>
 
-    <div class="grid">
-      <div class="card now">
-        <div class="nowTop">
-          <div class="nowLabel">Now</div>
-          <div class="nowMode" id="nowMode">☀️</div>
-        </div>
-
-        <div class="tempBlock">
-          <div class="tempMain">
-            <div class="temp" id="tempNow">—°</div>
-            <div class="feels" id="feelsNow">feels —°</div>
-          </div>
-          <div class="heroLine" id="heroLine">—</div>
-          <div class="heroSub" id="heroSub">—</div>
-        </div>
-
-        <div class="nowStats" id="nowStats"></div>
+    <div class="card mini wear" id="wearCard">
+      <div class="miniLeft">
+        <div class="miniLabel">Wear</div>
+        <div class="miniValue" id="wearValue">—</div>
+        <div class="miniSub" id="wearSub">—</div>
       </div>
+      <div class="miniIcon" id="wearIcon">👖</div>
+    </div>
 
-      <div class="card miniCard wear" id="wearCard">
-        <div class="miniLeft">
-          <div class="miniLabel">Wear</div>
-          <div class="miniValue" id="wearValue">—</div>
-          <div class="miniSub" id="wearSub">—</div>
-        </div>
-        <div class="miniIcon" id="wearIcon">👖</div>
+    <div class="card mini bring" id="bringCard">
+      <div class="miniLeft">
+        <div class="miniLabel">Bring</div>
+        <div class="miniValue" id="bringValue">—</div>
+        <div class="miniSub" id="bringSub">—</div>
       </div>
+      <div class="miniIcon" id="bringIcon">☔</div>
+    </div>
 
-      <div class="card miniCard bring" id="bringCard">
-        <div class="miniLeft">
-          <div class="miniLabel">Bring</div>
-          <div class="miniValue" id="bringValue">—</div>
-          <div class="miniSub" id="bringSub">—</div>
-        </div>
-        <div class="miniIcon" id="bringIcon">☔</div>
+    <div class="card mini protect" id="protectCard">
+      <div class="miniLeft">
+        <div class="miniLabel">Protect</div>
+        <div class="miniValue" id="protectValue">—</div>
+        <div class="miniSub" id="protectSub">—</div>
       </div>
+      <div class="miniIcon" id="protectIcon">🕶️</div>
+    </div>
 
-      <div class="card miniCard protect" id="protectCard">
-        <div class="miniLeft">
-          <div class="miniLabel">Protect</div>
-          <div class="miniValue" id="protectValue">—</div>
-          <div class="miniSub" id="protectSub">—</div>
-        </div>
-        <div class="miniIcon" id="protectIcon">🕶️</div>
+    <div class="card mini dog" id="dogCard">
+      <div class="miniLeft">
+        <div class="miniLabel">Dog walk</div>
+        <div class="miniValue" id="dogValue">—</div>
+        <div class="miniSub" id="dogSub">—</div>
       </div>
+      <div class="miniIcon">🐾</div>
+    </div>
 
-      <div class="card miniCard dog" id="dogCard">
-        <div class="miniLeft">
-          <div class="miniLabel">Dog walk</div>
-          <div class="miniValue" id="dogValue">—</div>
-          <div class="miniSub" id="dogSub">—</div>
-        </div>
-        <div class="miniIcon">🐾</div>
+    <div class="card bar walk">
+      <div class="barLeft">
+        <div class="barLabel">Best walk window</div>
+        <div class="barValue" id="walkValue">—</div>
+        <div class="barSub" id="walkSub">—</div>
       </div>
+      <div class="barIcon">🕒</div>
+    </div>
 
-      <div class="footer">
-        <div class="bar">
-          <div class="barLeft">
-            <div class="barLabel">Best walk window</div>
-            <div class="barValue" id="walkValue">—</div>
-            <div class="barSub" id="walkSub">—</div>
-          </div>
-          <div class="barIcon">🕒</div>
-        </div>
-
-        <div class="bar">
-          <div class="barLeft">
-            <div class="barLabel">Rain timing</div>
-            <div class="barValue" id="rainValue">—</div>
-            <div class="barSub" id="rainSub">—</div>
-          </div>
-          <div class="barIcon">☔</div>
-        </div>
+    <div class="card bar rain">
+      <div class="barLeft">
+        <div class="barLabel">Rain timing</div>
+        <div class="barValue" id="rainValue">—</div>
+        <div class="barSub" id="rainSub">—</div>
       </div>
+      <div class="barIcon">☔</div>
     </div>
   </div>
 </div>
@@ -737,7 +672,7 @@ function applyAutoMode(isDay){
   } else {
     root.setProperty("--fg","rgba(255,255,255,.92)");
     root.setProperty("--muted","rgba(255,255,255,.66)");
-    root.setProperty("--stroke","rgba(255,255,255,.14)");
+    root.setProperty("--stroke","rgba(255,255,255,.12)");
   }
 }
 function applyTheme({timePhase, condition, umbrella, sunscreen, sunglasses, jacket, tempNow, isDay}){
@@ -791,9 +726,8 @@ function sceneSVG({isDay}){
 }
 
 function setScene(html){ $("scene").innerHTML = html; }
-
 function setNowStats(items){
-  $("nowStats").innerHTML = items.map(it => `
+  $("stats").innerHTML = items.map(it => `
     <div class="stat">
       <div class="statTop">
         <div class="statIcon">${it.i}</div>
@@ -831,7 +765,6 @@ async function getLocation(){
 }
 
 let _timer=null;
-
 async function refresh(){
   try{
     const now = new Date();
@@ -886,15 +819,7 @@ async function refresh(){
     $("placeLine").textContent = placeText;
     $("updatedLine").textContent = `Updated ${fmtUpdated(new Date())}`;
 
-    const headlineBits = [];
-    headlineBits.push(`${outfit.bottoms}/${outfit.sleeves.includes("Long") ? "long" : "short"} sleeves`);
-    if (jacket) headlineBits.push("jacket");
-    if (umbrella) headlineBits.push("umbrella");
-    if (sunglasses) headlineBits.push("sunglasses");
-    if (sunscreen) headlineBits.push("sunscreen");
-    $("headlineLine").textContent = headlineBits.join(" • ");
-
-    $("nowMode").textContent =
+    $("modeIcon").textContent =
       condition === "clear"  ? (isDayNow ? "☀️" : "🌙") :
       condition === "partly" ? "🌤️" :
       condition === "cloudy" ? "☁️" :
@@ -906,7 +831,7 @@ async function refresh(){
     $("tempNow").textContent = `${round(tempNow)}°`;
     $("feelsNow").textContent = `feels ${round(appNow)}°`;
     $("heroLine").textContent = `${outfit.bottoms} • ${outfit.sleeves}`;
-    $("heroSub").textContent = `${placeText} • wind ${round(windNow)} mph`;
+    $("heroSub").textContent = `${placeText} • ${round(windNow)} mph wind`;
 
     const nextSun = nextSunEvent(d, now);
     const nextSunTxt = nextSun ? `${nextSun.type} ${fmtTimeLocal(nextSun.when.toISOString())}` : "—";
@@ -946,10 +871,13 @@ async function refresh(){
 
     $("rainValue").textContent = ttr ? ttr.text : "No near rain";
     $("rainSub").textContent = ttr ? "Time until ≥50% rain risk" : `4h max ${round(precipMax4h)}%`;
+
+    $("bringCard").classList.toggle("hidden", !bringList.length && !ttr);
+    $("protectCard").classList.toggle("hidden", !protectList.length);
   } catch (e){
     console.error(e);
     $("updatedLine").textContent = "Offline";
-    $("headlineLine").textContent = "Check Wi-Fi";
+    $("heroSub").textContent = "Check Wi-Fi";
   }
 }
 
