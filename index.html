@@ -4,21 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#0b0b12" />
-<title>Leave the House • 20005</title>
+<title>Leave the House</title>
 
 <style>
-  /* ======================
-     iPhone 11 LANDSCAPE
-     896 × 414 (Safari full-screen-ish)
-     No scrolling. All-at-a-glance.
-     ====================== */
   :root{
-    --maxw: 896px;
-    --pad: 16px;
+    --pad: 14px;
+    --gap: 10px;
 
-    /* dynamic palette */
     --bgA:#070812; --bgB:#0b0d18; --bgC:rgba(140,180,255,.10); --bgD:rgba(120,255,220,.06);
-
     --fg:rgba(255,255,255,.92);
     --muted:rgba(255,255,255,.66);
 
@@ -30,37 +23,38 @@
     --accent:rgba(140,180,255,1);
     --accent2:rgba(150,255,220,1);
 
-    --shadow:0 22px 70px rgba(0,0,0,.55);
-    --shadow2:0 12px 34px rgba(0,0,0,.34);
+    --shadow:0 18px 56px rgba(0,0,0,.48);
+    --shadow2:0 10px 28px rgba(0,0,0,.30);
 
-    --r:26px;
-    --r2:20px;
+    --r:22px;
+    --r2:18px;
 
-    --noise:.055;
+    --noise:.050;
     --shine:.55;
   }
 
   *{ box-sizing:border-box }
-  html,body{ height:100% }
+  html,body{ height:100%; width:100%; margin:0; }
   body{
-    margin:0;
-    overflow:hidden; /* IMPORTANT: no scrolling */
+    overflow:hidden;
     color:var(--fg);
-    font: 15px/1.25 system-ui,-apple-system,"SF Pro Display","SF Pro Text",Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    font: 14px/1.25 system-ui,-apple-system,"SF Pro Display","SF Pro Text",Segoe UI,Roboto,Helvetica,Arial,sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+
     background:
       radial-gradient(1100px 680px at 18% -10%, var(--bgC), transparent 58%),
       radial-gradient(900px 740px at 118% 0%, var(--bgD), transparent 58%),
       linear-gradient(180deg, var(--bgA), var(--bgB));
+
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
   .scene{ position:fixed; inset:0; z-index:0; pointer-events:none; }
   .scene svg{ width:100%; height:100%; display:block; }
   .mist{
-    position:fixed; inset:-90px; z-index:0; pointer-events:none;
-    filter: blur(30px);
+    position:fixed; inset:-80px; z-index:0; pointer-events:none;
+    filter: blur(28px);
     opacity:.55;
     background:
       radial-gradient(900px 520px at 16% 10%, color-mix(in srgb, var(--accent) 55%, transparent), transparent 60%),
@@ -77,65 +71,104 @@
 
   .app{
     position:relative; z-index:1;
-    max-width: var(--maxw);
-    margin: 0 auto;
-    height: 100vh; /* lock */
-    display:flex;
-    flex-direction:column;
+    width: 100%;
+    height: 100vh;
+    height: 100svh;
+    height: 100dvh;
+    display:grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--gap);
+    padding: 10px var(--pad) 10px;
+    overflow:hidden;
   }
 
-  /* ========= Top Glass Capsule ========= */
-  .topbar{
-    padding: 10px var(--pad) 8px;
-    flex: 0 0 auto;
+  .rotateHint{
+    position:absolute; inset: 10px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(0,0,0,.28);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding: 18px;
   }
+  .rotateHint .t{ font-size: 16px; font-weight: 950; letter-spacing: -0.02em; }
+  .rotateHint .s{ margin-top: 6px; font-size: 12px; color: var(--muted); font-weight: 780; }
+  @media (orientation: portrait){
+    .dash{ display:none !important; }
+    .rotateHint{ display:flex; }
+  }
+
   .topGlass{
-    border-radius: 24px;
+    border-radius: 20px;
     border: 1px solid var(--stroke);
     background:
-      radial-gradient(320px 130px at 18% 10%, rgba(255,255,255,.42), transparent 62%),
-      radial-gradient(320px 140px at 86% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 64%),
+      radial-gradient(360px 120px at 16% 0%, rgba(255,255,255,.40), transparent 64%),
+      radial-gradient(360px 140px at 86% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 66%),
       linear-gradient(180deg,
         color-mix(in srgb, var(--glass) 72%, transparent),
         color-mix(in srgb, var(--glass2) 88%, transparent)
       );
     backdrop-filter: blur(22px) saturate(1.45);
     -webkit-backdrop-filter: blur(22px) saturate(1.45);
-    box-shadow: 0 18px 52px rgba(0,0,0,.22);
+    box-shadow: 0 16px 44px rgba(0,0,0,.20);
     overflow:hidden;
-    position: relative;
+    position:relative;
   }
   .topGlass::after{
-    content:""; position:absolute; inset:0; border-radius:24px; pointer-events:none;
+    content:""; position:absolute; inset:0; border-radius:20px; pointer-events:none;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(0,0,0,.10);
     opacity:.55;
   }
   .specular{
-    height: 10px;
-    background: radial-gradient(520px 22px at 20% 55%, rgba(255,255,255,.55), transparent 74%);
+    height: 9px;
+    background: radial-gradient(560px 22px at 18% 55%, rgba(255,255,255,.56), transparent 74%);
     opacity: var(--shine);
   }
   .topInner{
-    padding: 10px 14px 12px;
-    display:flex; align-items:flex-end; justify-content:space-between; gap: 14px;
+    padding: 8px 12px 10px;
+    display:grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items:end;
   }
+
   .zip{
-    font-size: 12px;
-    letter-spacing: .11em;
+    font-size: 11px;
+    letter-spacing: .12em;
     text-transform: uppercase;
     color: var(--muted);
     white-space: nowrap;
   }
   .tempRow{ display:flex; align-items:baseline; gap: 10px; margin-top: 4px; white-space: nowrap; }
-  .tempNow{ font-size: 38px; font-weight: 900; letter-spacing: -0.05em; }
-  .feelsNow{ font-size: 13px; font-weight: 820; color: var(--muted); }
+  .tempNow{ font-size: 34px; font-weight: 920; letter-spacing: -0.05em; }
+  .feelsNow{ font-size: 12px; font-weight: 820; color: var(--muted); }
+
   .rightTop{
-    display:flex; flex-direction:column; align-items:flex-end; gap: 6px;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap: 4px;
+    min-width: 280px;
   }
-  .updated{ font-size: 12px; color: var(--muted); white-space: nowrap; text-align:right; }
-  .statusline{
-    font-size: 12px; font-weight: 850; color: var(--muted);
-    white-space: nowrap; text-align:right;
+  .updated{
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    text-align:right;
+  }
+  .headline{
+    font-size: 12px;
+    font-weight: 950;
+    color: var(--muted);
+    white-space: nowrap;
+    text-align:right;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    max-width: 360px;
   }
   .btn{
     border: 1px solid var(--stroke);
@@ -144,28 +177,26 @@
       rgba(255,255,255,.10);
     color: var(--fg);
     border-radius: 999px;
-    padding: 9px 12px;
-    min-height: 40px;
-    font-weight: 850;
+    padding: 8px 12px;
+    min-height: 36px;
+    font-weight: 900;
     font-size: 12px;
     display:inline-flex;
     align-items:center;
     gap: 8px;
     cursor:pointer;
     user-select:none;
-    box-shadow: 0 10px 28px rgba(0,0,0,.18);
+    box-shadow: 0 10px 24px rgba(0,0,0,.16);
   }
   .btn:active{ transform: translateY(1px); background: rgba(255,255,255,.12); }
   .btn[disabled]{ opacity:.6; cursor:default; }
 
-  /* ========= Main Grid (no scroll) ========= */
   .main{
-    padding: 0 var(--pad) 12px;
-    flex: 1 1 auto;
-    min-height: 0;
+    min-height:0;
     display:grid;
     grid-template-columns: 1.10fr .90fr;
-    gap: 12px;
+    gap: var(--gap);
+    overflow:hidden;
   }
 
   .card{
@@ -180,7 +211,7 @@
     box-shadow: var(--shadow);
     overflow:hidden;
     position: relative;
-    min-height: 0;
+    min-height:0;
   }
   .card::after{
     content:""; position:absolute; inset:0; pointer-events:none; border-radius: var(--r);
@@ -189,23 +220,29 @@
   }
 
   .cardHeader{
-    padding: 12px 14px 8px;
+    padding: 10px 12px 6px;
     display:flex; align-items:center; justify-content:space-between; gap: 10px;
   }
   .cardHeader .h{
     display:flex; align-items:center; gap: 8px;
-    font-size: 13px; font-weight: 900; letter-spacing: .02em;
+    font-size: 12px; font-weight: 950; letter-spacing: .02em;
     color: var(--muted);
+    white-space:nowrap;
   }
 
-  .leftBody{ padding: 0 14px 14px; display:flex; flex-direction:column; gap: 10px; min-height: 0; }
+  .leftBody, .rightBody{
+    padding: 0 12px 12px;
+    min-height:0;
+    overflow:hidden; /* no inner scroll */
+  }
 
+  /* LEFT: 3×2 decision grid (fits landscape height) */
   .stack{
     display:grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: var(--gap);
+    overflow:hidden;
   }
-
   .panel{
     border-radius: var(--r2);
     border: 1px solid rgba(255,255,255,.12);
@@ -214,17 +251,18 @@
       rgba(0,0,0,.10);
     backdrop-filter: blur(16px) saturate(1.12);
     -webkit-backdrop-filter: blur(16px) saturate(1.12);
-    padding: 12px 12px;
+    padding: 10px 10px;
     box-shadow: var(--shadow2);
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap: 10px;
-    min-height: 72px;
+    height: 72px; /* locked height so grid never overflows */
+    overflow:hidden;
   }
-  .panel .left{ display:flex; flex-direction:column; gap: 2px; min-width:0; }
+  .panel .left{ min-width:0; display:flex; flex-direction:column; gap: 2px; }
   .label{
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: .12em;
     text-transform: uppercase;
     color: var(--muted);
@@ -232,7 +270,7 @@
     white-space:nowrap;
   }
   .value{
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 950;
     letter-spacing: -0.02em;
     white-space: nowrap;
@@ -240,7 +278,7 @@
     text-overflow:ellipsis;
   }
   .sub{
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 850;
     color: var(--muted);
     white-space:nowrap;
@@ -248,7 +286,7 @@
     text-overflow:ellipsis;
   }
   .icon{
-    width: 44px; height: 44px; border-radius: 16px;
+    width: 42px; height: 42px; border-radius: 16px;
     border: 1px solid rgba(255,255,255,.14);
     background:
       radial-gradient(32px 32px at 30% 25%, rgba(255,255,255,.38), transparent 62%),
@@ -259,14 +297,12 @@
   }
   .hidden{ display:none !important; }
 
-  /* Right column tiles (all visible, 2×3) */
-  .rightBody{ padding: 0 14px 14px; min-height:0; display:flex; flex-direction:column; gap: 10px; }
+  /* RIGHT: 2×3 metrics tiles */
   .tiles{
     display:grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    flex: 1 1 auto;
-    min-height: 0;
+    gap: var(--gap);
+    overflow:hidden;
   }
   .tile{
     border-radius: 18px;
@@ -276,13 +312,16 @@
       rgba(0,0,0,.08);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    padding: 10px 12px;
+    padding: 9px 10px;
     box-shadow: var(--shadow2);
-    min-height: 78px;
-    display:flex; flex-direction:column; justify-content:space-between;
+    height: 72px; /* locked height */
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
   }
   .tile .k{
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: .12em;
     text-transform: uppercase;
     color: var(--muted);
@@ -291,21 +330,27 @@
     white-space:nowrap;
   }
   .tile .v{
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 950;
     letter-spacing: -0.02em;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    display:flex; align-items:baseline; gap: 10px;
+    display:flex; align-items:baseline; gap: 8px;
   }
-  .badge{ font-size: 12px; font-weight: 900; color: var(--muted); }
+  .badge{
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
 
-  /* tighten a bit if Safari bars reduce usable height */
-  @media (max-height: 395px){
-    .panel{ min-height: 68px }
-    .tile{ min-height: 74px }
-    .tempNow{ font-size: 36px }
+  /* Ultra-tight: if Safari chrome is thick, squeeze heights a touch */
+  @media (max-height: 360px){
+    .panel, .tile{ height: 66px; }
+    .tempNow{ font-size: 32px; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -320,41 +365,44 @@
 <div class="grain"></div>
 
 <div class="app">
-  <div class="topbar">
-    <div class="topGlass">
-      <div class="specular"></div>
-      <div class="topInner">
-        <div>
-          <div class="zip">Leave-the-House • ZIP 20005</div>
-          <div class="tempRow">
-            <div class="tempNow" id="tempNow">—°</div>
-            <div class="feelsNow" id="feelsNow">feels —°</div>
-          </div>
+  <div class="rotateHint">
+    <div>
+      <div class="t">Rotate to Landscape</div>
+      <div class="s">This dashboard is designed for iPhone 11 landscape kiosk mode.</div>
+    </div>
+  </div>
+
+  <div class="dash topGlass">
+    <div class="specular"></div>
+    <div class="topInner">
+      <div>
+        <div class="zip" id="locLine">Leave-the-House</div>
+        <div class="tempRow">
+          <div class="tempNow" id="tempNow">—°</div>
+          <div class="feelsNow" id="feelsNow">feels —°</div>
         </div>
-        <div class="rightTop">
-          <div class="updated" id="updatedAt">Updated —</div>
-          <div class="statusline" id="headline">—</div>
-          <button class="btn" id="refreshBtn" type="button" aria-label="Refresh now">
-            <span aria-hidden="true">⟳</span><span>Refresh</span>
-          </button>
-        </div>
+      </div>
+      <div class="rightTop">
+        <div class="updated" id="updatedAt">Updated —</div>
+        <div class="headline" id="headline">—</div>
+        <button class="btn" id="refreshBtn" type="button" aria-label="Refresh now">
+          <span aria-hidden="true">⟳</span><span>Refresh</span>
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="main">
-    <!-- LEFT: Decisions -->
+  <div class="dash main">
     <div class="card">
       <div class="cardHeader">
         <div class="h"><span aria-hidden="true">✨</span><span>Do this</span></div>
-        <div class="h" id="leftHint">Next ~6 hours</div>
+        <div class="h" id="leftHint">Best walk —</div>
       </div>
       <div class="leftBody">
         <div class="stack" id="stack"></div>
       </div>
     </div>
 
-    <!-- RIGHT: Metrics -->
     <div class="card">
       <div class="cardHeader">
         <div class="h"><span aria-hidden="true">📌</span><span>At a glance</span></div>
@@ -368,16 +416,23 @@
 </div>
 
 <script>
-/* ===== Config ===== */
-const ZIP = "20005";
-const TZ  = "America/New_York";
-const REFRESH_MS = 60 * 60 * 1000; // hourly
+/* =========================================================
+   GPS + Local Time
+   - Uses navigator.geolocation if permitted
+   - Uses device timezone automatically (Intl)
+   - Falls back to ZIP 20005 if GPS unavailable
+   ========================================================= */
+
+const FALLBACK_ZIP = "20005";
+const REFRESH_MS = 60 * 60 * 1000;
 const RUN_HOT = true;
 
-/* ===== Helpers ===== */
 const $ = (id)=>document.getElementById(id);
 const round = (n)=>Math.round(n);
 
+function tzLocal(){
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || "auto";
+}
 function fmtTimeLocal(iso){
   if(!iso) return "—";
   const d = new Date(iso);
@@ -412,7 +467,7 @@ function escapeHtml(str){
 }
 function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
 
-/* ===== Decisions (run hot tuned) ===== */
+/* ===== Clothing/bring/protect logic ===== */
 function clothingPlan(apparentF, windMph){
   const hotBias = RUN_HOT ? 4 : 0;
   const a = apparentF + hotBias;
@@ -431,8 +486,14 @@ function jacketNeeded(apparentF, tempF, windMph, precipProbMax){
   const chilly= cold <= 52;
   return (chilly && (windy || wet)) || cold <= 45;
 }
-function sunscreenNeeded(uvMax4h, isDayNow){
-  return isDayNow && (uvMax4h ?? 0) >= 3;
+function sunscreenNeeded(uvMax4h, isDayNow){ return isDayNow && (uvMax4h ?? 0) >= 3; }
+function minutesToNearestSunBoundary(now, sunriseIso, sunsetIso){
+  const sunrise = sunriseIso ? new Date(sunriseIso) : null;
+  const sunset  = sunsetIso  ? new Date(sunsetIso)  : null;
+  if(!sunrise || !sunset) return null;
+  const minsSinceSunrise = Math.abs((now - sunrise) / 60000);
+  const minsUntilSunset  = Math.abs((sunset - now) / 60000);
+  return Math.min(minsSinceSunrise, minsUntilSunset);
 }
 function sunglassesNeeded(isDayNow, uvNow, minutesToOrFromSunEvent){
   if (!isDayNow) return false;
@@ -440,11 +501,8 @@ function sunglassesNeeded(isDayNow, uvNow, minutesToOrFromSunEvent){
   const lowSun = minutesToOrFromSunEvent !== null && minutesToOrFromSunEvent <= 90;
   return uvOk || lowSun;
 }
-function umbrellaNeeded(precipProbMax4h){
-  return (precipProbMax4h ?? 0) >= 30;
-}
+function umbrellaNeeded(precipProbMax4h){ return (precipProbMax4h ?? 0) >= 30; }
 
-/* Dog walk comfort (tuned for “I run hot”) */
 function dogWalkRating(apparentF, windMph, precipProbMax4h){
   const hotBias = RUN_HOT ? 4 : 0;
   const a = apparentF + hotBias;
@@ -468,14 +526,24 @@ async function geocodeZip(zip){
   const j = await r.json();
   const hit = j?.results?.[0];
   if(!hit) throw new Error("ZIP not found");
-  return { lat: hit.latitude, lon: hit.longitude };
+  return { lat: hit.latitude, lon: hit.longitude, name: hit.name || zip };
 }
 
-async function fetchForecast(lat, lon){
+async function reverseGeocode(lat, lon){
+  // Use Open-Meteo reverse geocoding for a friendly place label
+  const url = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&count=1&language=en&format=json&t=${Date.now()}`;
+  const r = await fetch(url, { cache:"no-store" });
+  if(!r.ok) return null;
+  const j = await r.json();
+  const hit = j?.results?.[0];
+  return hit ? { name: hit.name, admin1: hit.admin1, country: hit.country } : null;
+}
+
+async function fetchForecast(lat, lon, tz){
   const params = new URLSearchParams({
     latitude: String(lat),
     longitude: String(lon),
-    timezone: TZ,
+    timezone: tz,
     temperature_unit: "fahrenheit",
     windspeed_unit: "mph",
     precipitation_unit: "inch",
@@ -503,12 +571,11 @@ async function fetchForecast(lat, lon){
   return r.json();
 }
 
-/* Open-Meteo Air Quality (US AQI) */
-async function fetchAQI(lat, lon){
+async function fetchAQI(lat, lon, tz){
   const params = new URLSearchParams({
     latitude: String(lat),
     longitude: String(lon),
-    timezone: TZ,
+    timezone: tz,
     hourly: "us_aqi",
     forecast_days: "2"
   });
@@ -518,7 +585,7 @@ async function fetchAQI(lat, lon){
   return r.json();
 }
 
-/* ===== Condition + time ===== */
+/* ===== Condition buckets + time phase ===== */
 function bucketFromWeathercode(code){
   if (code === 0) return "clear";
   if ([1,2].includes(code)) return "partly";
@@ -533,10 +600,10 @@ function timePhaseFromSun(now, sunriseIso, sunsetIso){
   const sunrise = sunriseIso ? new Date(sunriseIso) : null;
   const sunset  = sunsetIso  ? new Date(sunsetIso)  : null;
   if(!sunrise || !sunset) return "day";
-  const TW = 75; // minutes
-  const minsToSunrise = (sunrise - now) / 60000;
-  const minsFromSunrise = (now - sunrise) / 60000;
-  const minsToSunset = (sunset - now) / 60000;
+  const TW = 75;
+  const minsToSunrise = (sunrise - now)/60000;
+  const minsFromSunrise = (now - sunrise)/60000;
+  const minsToSunset = (sunset - now)/60000;
 
   if (now < sunrise) return (minsToSunrise <= TW) ? "dawn" : "night";
   if (now >= sunrise && now <= sunset){
@@ -552,24 +619,16 @@ function nextSunEvent(daily, now){
   const sunrise1 = daily.sunrise?.[1] ? new Date(daily.sunrise[1]) : null;
   const sunset1  = daily.sunset?.[1]  ? new Date(daily.sunset[1])  : null;
 
-  const candidates = [
+  const c = [
     sunrise0 && sunrise0 > now ? { type:"Sunrise", when:sunrise0 } : null,
     sunset0  && sunset0  > now ? { type:"Sunset",  when:sunset0  } : null,
     sunrise1 && sunrise1 > now ? { type:"Sunrise", when:sunrise1 } : null,
-    sunset1  && sunset1  > now ? { type:"Sunset",  when:sunset1  } : null
+    sunset1  && sunset1  > now ? { type:"Sunset",  when:sunset1  } : null,
   ].filter(Boolean);
 
-  if (!candidates.length) return null;
-  candidates.sort((a,b)=>a.when - b.when);
-  return candidates[0];
-}
-function minutesToNearestSunBoundary(now, sunriseIso, sunsetIso){
-  const sunrise = sunriseIso ? new Date(sunriseIso) : null;
-  const sunset  = sunsetIso  ? new Date(sunsetIso)  : null;
-  if(!sunrise || !sunset) return null;
-  const minsSinceSunrise = Math.abs((now - sunrise) / 60000);
-  const minsUntilSunset  = Math.abs((sunset - now) / 60000);
-  return Math.min(minsSinceSunrise, minsUntilSunset);
+  if(!c.length) return null;
+  c.sort((a,b)=>a.when-b.when);
+  return c[0];
 }
 
 /* AQI labels */
@@ -599,28 +658,22 @@ function timeToRain(timeArr, precipProbArr, startIdx, lookAheadHours=8, threshol
   return null;
 }
 
-/* Best walk window (next N hours): choose a 90-min window with best score */
+/* Best walk window: choose a 2h block (approx 90–120 min) with best score */
 function bestWalkWindow(hourly, startIdx, hoursAhead=8){
-  // Score weights: rain dominates; then comfort; then wind
-  // Comfort target feels-like ~62 (tuned for you running hot by shifting a bit warmer)
   const target = RUN_HOT ? 64 : 62;
-
   const times = hourly.time;
   const feels = hourly.apparent_temperature;
   const rainP = hourly.precipitation_probability;
   const wind  = hourly.windspeed_10m;
 
   let best = null;
-
-  // Consider 2-hour windows (start hour, next hour) ~ 90 min real life
   for (let i=0;i<Math.max(0, hoursAhead-1);i++){
     const a0 = feels[startIdx+i], a1 = feels[startIdx+i+1];
     const p0 = rainP[startIdx+i], p1 = rainP[startIdx+i+1];
     const w0 = wind[startIdx+i],  w1 = wind[startIdx+i+1];
-
     if ([a0,a1,p0,p1,w0,w1].some(v => v == null)) continue;
 
-    const rainScore = (p0 + p1) * 2.2;                // big penalty
+    const rainScore = (p0 + p1) * 2.2;
     const comfortScore = (Math.abs(a0-target)+Math.abs(a1-target)) * 1.2;
     const windScore = (w0 + w1) * 0.45;
     const score = rainScore + comfortScore + windScore;
@@ -638,18 +691,18 @@ function bestWalkWindow(hourly, startIdx, hoursAhead=8){
   return best;
 }
 
-/* ===== Auto light/dark mode ===== */
+/* ===== Auto light/dark (based on is_day from forecast) ===== */
 function applyAutoMode(isDay){
   const root = document.documentElement.style;
   if (isDay){
     root.setProperty("--fg","rgba(0,0,0,.92)");
     root.setProperty("--muted","rgba(0,0,0,.55)");
-    root.setProperty("--glass","rgba(255,255,255,.70)");
-    root.setProperty("--glass2","rgba(255,255,255,.44)");
+    root.setProperty("--glass","rgba(255,255,255,.72)");
+    root.setProperty("--glass2","rgba(255,255,255,.46)");
     root.setProperty("--stroke","rgba(255,255,255,.92)");
     root.setProperty("--stroke2","rgba(255,255,255,.70)");
-    root.setProperty("--shadow","0 18px 56px rgba(0,0,0,.18)");
-    root.setProperty("--shadow2","0 10px 28px rgba(0,0,0,.14)");
+    root.setProperty("--shadow","0 16px 44px rgba(0,0,0,.18)");
+    root.setProperty("--shadow2","0 10px 26px rgba(0,0,0,.14)");
   } else {
     root.setProperty("--fg","rgba(255,255,255,.92)");
     root.setProperty("--muted","rgba(255,255,255,.66)");
@@ -657,8 +710,8 @@ function applyAutoMode(isDay){
     root.setProperty("--glass2","rgba(255,255,255,.06)");
     root.setProperty("--stroke","rgba(255,255,255,.18)");
     root.setProperty("--stroke2","rgba(255,255,255,.12)");
-    root.setProperty("--shadow","0 22px 70px rgba(0,0,0,.55)");
-    root.setProperty("--shadow2","0 12px 34px rgba(0,0,0,.34)");
+    root.setProperty("--shadow","0 18px 56px rgba(0,0,0,.48)");
+    root.setProperty("--shadow2","0 10px 28px rgba(0,0,0,.30)");
   }
 }
 
@@ -694,7 +747,6 @@ function applyTheme({timePhase, condition, umbrella, sunscreen, sunglasses, jack
     document.querySelector('meta[name="theme-color"]').setAttribute("content","#070812");
   }
 
-  // Accent priority: must take > condition > temperature
   if (umbrella || condition === "rain" || condition === "storm"){
     root.setProperty("--accent","rgba(120,170,255,1)");
     root.setProperty("--accent2","rgba(120,220,255,1)");
@@ -713,7 +765,7 @@ function applyTheme({timePhase, condition, umbrella, sunscreen, sunglasses, jack
   }
 }
 
-/* ===== Background “weather image” scene ===== */
+/* ===== Background scene ===== */
 function sceneSVG({timePhase, condition, tempF, windMph, isDay}){
   const cold = tempF <= 42;
   const windy = windMph >= 16;
@@ -778,9 +830,8 @@ function sceneSVG({timePhase, condition, tempF, windMph, isDay}){
       </g>` : "";
 
   const coldHaze = cold
-    ? `<g opacity="${isDay ? "0.20" : "0.34"}">
-        <rect x="0" y="0" width="844" height="390" fill="rgba(170,220,255,.10)"/>
-       </g>` : "";
+    ? `<g opacity="${isDay ? "0.20" : "0.34"}"><rect x="0" y="0" width="844" height="390" fill="rgba(170,220,255,.10)"/></g>`
+    : "";
 
   return `
   <svg viewBox="0 0 844 390" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -810,12 +861,11 @@ function sceneSVG({timePhase, condition, tempF, windMph, isDay}){
   </svg>`;
 }
 
-/* ===== UI builders ===== */
+/* UI builders */
 function setScene(html){ $("scene").innerHTML = html; }
 
 function setTiles(items){
-  const el = $("tiles");
-  el.innerHTML = items.map(it => `
+  $("tiles").innerHTML = items.map(it => `
     <div class="tile ${it.hidden ? "hidden":""}">
       <div class="k"><span aria-hidden="true">${it.i}</span>${escapeHtml(it.k)}</div>
       <div class="v">${escapeHtml(it.v)} <span class="badge">${escapeHtml(it.b || "")}</span></div>
@@ -824,8 +874,9 @@ function setTiles(items){
 }
 
 function setStack(cards){
-  const el = $("stack");
-  el.innerHTML = cards.filter(c=>!c.hidden).map(c => `
+  // Keep it ALWAYS 6 max for kiosk fit. Prefer the most important first.
+  const trimmed = cards.filter(c=>!c.hidden).slice(0,6);
+  $("stack").innerHTML = trimmed.map(c => `
     <div class="panel">
       <div class="left">
         <div class="label">${escapeHtml(c.label)}</div>
@@ -837,7 +888,42 @@ function setStack(cards){
   `).join("");
 }
 
-/* ===== Main ===== */
+/* ===== Location handling ===== */
+let LAST_POS = null;
+
+function getGPSPosition(timeoutMs=6500){
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject(new Error("Geolocation not supported"));
+    navigator.geolocation.getCurrentPosition(
+      (pos)=>resolve(pos),
+      (err)=>reject(err),
+      {
+        enableHighAccuracy: false,     // faster + less battery; always-on plug-in anyway
+        timeout: timeoutMs,
+        maximumAge: 10 * 60 * 1000     // allow cached within 10 minutes
+      }
+    );
+  });
+}
+
+async function getLocation(){
+  // Try GPS
+  try{
+    const pos = await getGPSPosition();
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    LAST_POS = { lat, lon };
+    return { lat, lon, source: "gps" };
+  }catch(e){
+    // Fallback to last known GPS in this session
+    if (LAST_POS) return { ...LAST_POS, source: "gps_cached" };
+    // Fallback to ZIP
+    const g = await geocodeZip(FALLBACK_ZIP);
+    return { lat: g.lat, lon: g.lon, source: "zip", name: g.name };
+  }
+}
+
+/* ===== Refresh loop ===== */
 let _timer=null;
 
 async function refresh(){
@@ -845,19 +931,20 @@ async function refresh(){
     $("refreshBtn").disabled = true;
 
     const now = new Date();
-    const loc = await geocodeZip(ZIP);
+    const tz = tzLocal();
+    const loc = await getLocation();
 
-    // Fetch weather + AQI in parallel
-    const [fx, ax] = await Promise.all([
-      fetchForecast(loc.lat, loc.lon),
-      fetchAQI(loc.lat, loc.lon)
+    // Forecast + AQI in parallel
+    const [fx, ax, place] = await Promise.all([
+      fetchForecast(loc.lat, loc.lon, tz),
+      fetchAQI(loc.lat, loc.lon, tz),
+      reverseGeocode(loc.lat, loc.lon).catch(()=>null)
     ]);
 
     const h = fx.hourly;
     const d = fx.daily;
 
     const idx = sameHourIndex(h.time, now);
-
     const tempNow = h.temperature_2m[idx];
     const appNow  = h.apparent_temperature[idx];
     const windNow = h.windspeed_10m[idx];
@@ -874,7 +961,7 @@ async function refresh(){
     const sunrise0 = d.sunrise?.[0];
     const sunset0  = d.sunset?.[0];
 
-    // AQI (current + next 4h max)
+    // AQI
     const ah = ax.hourly;
     const aIdx = sameHourIndex(ah.time, now);
     const aqiNow = ah.us_aqi?.[aIdx];
@@ -882,39 +969,35 @@ async function refresh(){
     const aqiNowLabel = aqiLabel(aqiNow);
     const aqiMaxLabel = aqiLabel(aqiMax4h);
 
-    // mode + theme
+    // Mode + theme
     applyAutoMode(isDayNow);
-    const timePhase = timePhaseFromSun(now, sunrise0, sunset0);
     const condition = bucketFromWeathercode(codeNow);
-
+    const timePhase = timePhaseFromSun(now, sunrise0, sunset0);
     const minsSunBoundary = minutesToNearestSunBoundary(now, sunrise0, sunset0);
 
-    // decisions
+    // Decisions
     const outfit = clothingPlan(appNow, windNow);
     const jacket = jacketNeeded(appNow, tempNow, windNow, precipMax4h);
     const sunscreen = sunscreenNeeded(uvMax4h, isDayNow);
     const sunglasses = sunglassesNeeded(isDayNow, uvNow, minsSunBoundary);
     const umbrella = umbrellaNeeded(precipMax4h);
-
     const dog = dogWalkRating(appNow, windNow, precipMax4h);
 
-    // time-to-rain + walk window
+    // Optional features
     const ttr = timeToRain(h.time, h.precipitation_probability, idx, 8, 50);
     const best = bestWalkWindow(h, idx, 8);
-    const bestText = best
-      ? `${fmtTimeLocal(best.start.toISOString())}–${fmtTimeLocal(best.end.toISOString())}`
-      : "—";
+    const bestText = best ? `${fmtTimeLocal(best.start.toISOString())}–${fmtTimeLocal(best.end.toISOString())}` : "—";
 
-    // apply theming + background scene
     applyTheme({timePhase, condition, umbrella, sunscreen, sunglasses, jacket, tempNow, isDay: isDayNow});
     setScene(sceneSVG({timePhase, condition, tempF: tempNow, windMph: windNow, isDay: isDayNow}));
 
-    // Header
+    // Header text
+    const placeText = place ? `${place.name}${place.admin1 ? ", " + place.admin1 : ""}` : (loc.source.startsWith("gps") ? "Local" : `ZIP ${FALLBACK_ZIP}`);
+    $("locLine").textContent = `Leave-the-House • ${placeText}`;
     $("tempNow").textContent = `${round(tempNow)}°`;
     $("feelsNow").textContent = `feels ${round(appNow)}°`;
     $("updatedAt").textContent = `Updated ${fmtUpdated(new Date())}`;
 
-    // headline: the one line you read from across the room
     const headlineBits = [];
     headlineBits.push(`${outfit.bottoms}/${outfit.sleeves.includes("Long") ? "long" : "short"} sleeves`);
     if (jacket) headlineBits.push("jacket");
@@ -926,7 +1009,7 @@ async function refresh(){
     $("leftHint").textContent = `Best walk: ${bestText}`;
     $("rightHint").textContent = `Now + 4h`;
 
-    // Build left “Do this” stack (2×2 grid, always visible)
+    // Left stack (max 6 panels)
     const wearIcon = outfit.bottoms === "Shorts" ? "🩳" : "👖";
 
     const bringList = [];
@@ -937,27 +1020,20 @@ async function refresh(){
     if (sunscreen) protectList.push("Sunscreen");
     if (sunglasses) protectList.push("Sunglasses");
 
-    const dogSub = dog.note ? dog.note : `Wind ${round(windNow)} mph`;
-    const rainSub = ttr ? `Rain ≥50%: ${ttr.text}` : `Next 8h: ${round(maxNextN(h.precipitation_probability, idx, 8))}% max`;
-
-    const walkSub = best
-      ? `Feels ~${round(best.feelsAvg)}° • Rain ~${round(best.rainAvg)}%`
-      : `Feels now ${round(appNow)}°`;
-
-    const aqiSub = (aqiNow != null)
-      ? `Now ${round(aqiNow)} • 4h max ${round(aqiMax4h)}`
-      : `AQI unavailable`;
+    const rainSub = ttr ? `Rain ≥50%: ${ttr.text}` : `Next 8h max ${round(maxNextN(h.precipitation_probability, idx, 8))}%`;
+    const walkSub = best ? `Feels ~${round(best.feelsAvg)}° • Rain ~${round(best.rainAvg)}%` : `Feels now ${round(appNow)}°`;
+    const aqiSub  = (aqiNow != null) ? `Now ${round(aqiNow)} • 4h max ${round(aqiMax4h)} (${aqiMaxLabel.label})` : `AQI unavailable`;
 
     setStack([
       { label:"Wear", value:`${outfit.bottoms} • ${outfit.sleeves}`, sub:`Feels ${round(appNow)}° • Wind ${round(windNow)} mph`, icon: wearIcon },
-      { label:"Bring", value: bringList.length ? bringList.join(" + ") : "Nothing extra", sub: rainSub, icon: umbrella ? "☔" : (jacket ? "🧥" : "✅"), hidden: bringList.length === 0 && !ttr },
-      { label:"Protect", value: protectList.length ? protectList.join(" + ") : "No extras", sub: isDayNow ? `UV max (4h) ${round(uvMax4h)}` : "Night", icon: sunglasses ? "🕶️" : (sunscreen ? "🧴" : "✨"), hidden: protectList.length === 0 },
-      { label:"Dog walk", value: dog.label, sub: dogSub, icon:"🐾" },
+      { label:"Bring", value: bringList.length ? bringList.join(" + ") : "Nothing extra", sub: rainSub, icon: umbrella ? "☔" : (jacket ? "🧥" : "✅"), hidden: (bringList.length === 0 && !ttr) },
+      { label:"Protect", value: protectList.length ? protectList.join(" + ") : "No extras", sub: isDayNow ? `UV max (4h) ${round(uvMax4h)}` : "Night", icon: sunglasses ? "🕶️" : (sunscreen ? "🧴" : "✨"), hidden: (protectList.length === 0) },
+      { label:"Dog walk", value: dog.label, sub: dog.note || `Wind ${round(windNow)} mph`, icon:"🐾" },
       { label:"Walk window", value: bestText, sub: walkSub, icon:"🕒", hidden: !best },
       { label:"Air quality", value: `${aqiNowLabel.label}`, sub: aqiSub, icon: aqiNowLabel.emoji, hidden: aqiNow == null }
     ]);
 
-    // Right tiles (2×3)
+    // Right tiles
     const conditionEmoji =
       condition === "clear"  ? (isDayNow ? "☀️" : "🌙") :
       condition === "partly" ? "🌤️" :
@@ -991,12 +1067,15 @@ async function refresh(){
   }
 }
 
-/* ===== Run ===== */
+/* ===== Kick off ===== */
 $("refreshBtn").addEventListener("click", refresh);
+
 refresh();
 clearInterval(_timer);
 _timer = setInterval(refresh, REFRESH_MS);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+
+/* Optional: attempt a fresh GPS fix occasionally (hourly already triggers) */
 </script>
 </body>
 </html>
