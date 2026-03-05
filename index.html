@@ -11,52 +11,53 @@
 <style>
   :root{
     --pad: 8px;
-    --gap: 6px;
+    --gap: 8px;
 
-    --bgA:#070812; --bgB:#0b0d18; --bgC:rgba(140,180,255,.10); --bgD:rgba(120,255,220,.06);
-    --fg:rgba(255,255,255,.92);
-    --muted:rgba(255,255,255,.64);
+    --bgA:#070812;
+    --bgB:#0b0d18;
+    --bgC:rgba(140,180,255,.10);
+    --bgD:rgba(120,255,220,.06);
 
-    --glass:rgba(255,255,255,.10);
-    --glass2:rgba(255,255,255,.06);
-    --stroke:rgba(255,255,255,.18);
-    --stroke2:rgba(255,255,255,.12);
+    --fg:rgba(255,255,255,.94);
+    --muted:rgba(255,255,255,.68);
+    --soft:rgba(255,255,255,.12);
+    --stroke:rgba(255,255,255,.14);
+    --shadow:0 12px 28px rgba(0,0,0,.28);
 
     --accent:rgba(140,180,255,1);
     --accent2:rgba(150,255,220,1);
 
-    --shadow:0 10px 28px rgba(0,0,0,.38);
-    --shadow2:0 6px 14px rgba(0,0,0,.22);
-
-    --r:14px;
-    --r2:12px;
+    --r:16px;
+    --r2:14px;
   }
 
   *{ box-sizing:border-box }
-  html,body{ height:100%; width:100%; margin:0 }
+  html,body{ width:100%; height:100%; margin:0; }
   body{
     overflow:hidden;
     color:var(--fg);
-    font: 12px/1.1 system-ui,-apple-system,"SF Pro Display","SF Pro Text",Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    font:12px/1.08 system-ui,-apple-system,"SF Pro Display","SF Pro Text",Segoe UI,Roboto,Helvetica,Arial,sans-serif;
     -webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility;
     background:
-      radial-gradient(1000px 620px at 18% -10%, var(--bgC), transparent 58%),
-      radial-gradient(800px 620px at 118% 0%, var(--bgD), transparent 58%),
+      radial-gradient(1200px 680px at 10% -10%, var(--bgC), transparent 58%),
+      radial-gradient(1000px 680px at 100% 0%, var(--bgD), transparent 62%),
       linear-gradient(180deg, var(--bgA), var(--bgB));
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
-  .scene{ position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .scene{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+  }
   .scene svg{ width:100%; height:100%; display:block; }
 
   .mist{
-    position:fixed; inset:-60px; z-index:0; pointer-events:none;
-    filter: blur(18px);
-    opacity:.42;
+    position:fixed; inset:-80px; z-index:0; pointer-events:none;
+    filter: blur(24px);
+    opacity:.45;
     background:
-      radial-gradient(800px 420px at 16% 10%, color-mix(in srgb, var(--accent) 50%, transparent), transparent 60%),
-      radial-gradient(760px 420px at 88% 8%, color-mix(in srgb, var(--accent2) 50%, transparent), transparent 62%);
+      radial-gradient(900px 480px at 15% 15%, color-mix(in srgb, var(--accent) 46%, transparent), transparent 62%),
+      radial-gradient(900px 480px at 92% 8%, color-mix(in srgb, var(--accent2) 42%, transparent), transparent 62%);
   }
 
   .app{
@@ -68,232 +69,368 @@
     display:grid;
     grid-template-rows: 1fr;
     overflow:hidden;
-    padding: 6px var(--pad);
+    padding: 6px;
   }
 
   .rotateHint{
-    position:absolute; inset: 8px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,.18);
-    background: rgba(0,0,0,.28);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    position:absolute; inset:8px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(0,0,0,.28);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
     display:none;
     align-items:center;
     justify-content:center;
     text-align:center;
-    padding: 14px;
+    padding:16px;
   }
-  .rotateHint .t{ font-size: 14px; font-weight: 900; }
-  .rotateHint .s{ margin-top: 4px; font-size: 11px; color: var(--muted); font-weight: 700; }
+  .rotateHint .t{ font-size:14px; font-weight:900; }
+  .rotateHint .s{ margin-top:6px; color:var(--muted); font-size:11px; }
 
   @media (orientation: portrait){
     .dash{ display:none !important; }
     .rotateHint{ display:flex; }
   }
 
-  .main{
+  .board{
+    position:relative;
+    overflow:hidden;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,.12);
+    background:
+      radial-gradient(900px 500px at 10% -10%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, color-mix(in srgb, var(--accent2) 16%, transparent), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
+    backdrop-filter: blur(14px) saturate(1.06);
+    -webkit-backdrop-filter: blur(14px) saturate(1.06);
+    box-shadow: var(--shadow);
+    padding: 8px;
+    display:grid;
+    grid-template-rows: auto 1fr;
+    gap:8px;
+    min-height:0;
+  }
+
+  .board::after{
+    content:"";
+    position:absolute; inset:0;
+    pointer-events:none;
+    border-radius:20px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+    opacity:.5;
+  }
+
+  .meta{
+    display:grid;
+    grid-template-columns: 1fr auto;
+    gap:10px;
+    align-items:start;
+    min-width:0;
+  }
+  .place{
+    min-width:0;
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:800;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    padding:2px 4px 0 4px;
+  }
+  .metaRight{
+    min-width:0;
+    text-align:right;
+    padding:2px 4px 0 4px;
+  }
+  .updated{
+    font-size:10px;
+    color:var(--muted);
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .headline{
+    margin-top:2px;
+    font-size:10px;
+    color:var(--muted);
+    font-weight:900;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:320px;
+  }
+
+  .grid{
     min-height:0;
     display:grid;
-    grid-template-columns: 1.42fr .58fr;
+    grid-template-columns: 1.35fr .82fr .82fr;
+    grid-template-rows: 1fr 1fr 62px;
     gap: var(--gap);
-    overflow:hidden;
   }
 
   .card{
     border-radius: var(--r);
-    border: 1px solid var(--stroke2);
+    border:1px solid var(--stroke);
     background:
-      radial-gradient(760px 360px at 20% -10%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 60%),
-      radial-gradient(760px 360px at 120% 20%, color-mix(in srgb, var(--accent2) 20%, transparent), transparent 62%),
-      linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
-    backdrop-filter: blur(14px) saturate(1.08);
-    -webkit-backdrop-filter: blur(14px) saturate(1.08);
-    box-shadow: var(--shadow);
+      radial-gradient(300px 120px at 16% 0%, rgba(255,255,255,.12), transparent 62%),
+      rgba(0,0,0,.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 6px 18px rgba(0,0,0,.18);
     overflow:hidden;
-    position: relative;
-    min-height:0;
-  }
-
-  .card::after{
-    content:"";
-    position:absolute; inset:0;
-    pointer-events:none;
-    border-radius: var(--r);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.34);
-    opacity:.35;
-  }
-
-  .cardHeader{
-    padding: 5px 8px 4px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap: 8px;
-  }
-
-  .cardHeader .h{
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: .02em;
-    color: var(--muted);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .body{
-    padding: 0 8px 8px;
-    min-height:0;
-    overflow:hidden;
-  }
-
-  .stack{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--gap);
-    overflow:hidden;
-  }
-
-  .panel{
-    border-radius: var(--r2);
-    border: 1px solid rgba(255,255,255,.11);
-    background: rgba(0,0,0,.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 7px 8px;
-    box-shadow: var(--shadow2);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap: 8px;
-    height: 58px;
-    overflow:hidden;
-  }
-
-  .panel .left{
     min-width:0;
-    display:flex;
-    flex-direction:column;
-    gap: 1px;
+    min-height:0;
   }
 
-  .label{
-    font-size: 9px;
-    letter-spacing: .11em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 900;
-    white-space:nowrap;
+  .now{
+    grid-column:1;
+    grid-row:1 / span 2;
+    display:grid;
+    grid-template-rows: auto 1fr auto;
+    padding:12px;
+    background:
+      radial-gradient(420px 160px at 18% -6%, rgba(255,255,255,.18), transparent 62%),
+      radial-gradient(420px 160px at 100% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 62%),
+      rgba(0,0,0,.08);
+  }
+
+  .nowTop{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .nowLabel{
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:900;
+  }
+  .nowMode{
+    font-size:18px;
     line-height:1;
   }
 
-  .value{
-    font-size: 13px;
-    font-weight: 950;
-    letter-spacing: -0.02em;
-    white-space: nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    line-height:1.05;
+  .tempBlock{
+    align-self:center;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    min-width:0;
   }
-
-  .sub{
-    font-size: 9.5px;
-    font-weight: 800;
-    color: var(--muted);
+  .tempMain{
+    display:flex;
+    align-items:flex-end;
+    gap:12px;
+    min-width:0;
+  }
+  .temp{
+    font-size:58px;
+    font-weight:950;
+    letter-spacing:-0.06em;
+    line-height:.9;
+    white-space:nowrap;
+  }
+  .feels{
+    font-size:16px;
+    font-weight:900;
+    color:var(--muted);
+    white-space:nowrap;
+    padding-bottom:8px;
+  }
+  .heroLine{
+    font-size:16px;
+    font-weight:900;
+    letter-spacing:-0.02em;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    line-height:1.05;
+  }
+  .heroSub{
+    font-size:12px;
+    font-weight:800;
+    color:var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
-  .icon{
-    width: 34px;
-    height: 34px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.09);
+  .nowStats{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:6px 10px;
+    margin-top:8px;
+  }
+  .stat{
+    min-width:0;
+  }
+  .statTop{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    min-width:0;
+  }
+  .statIcon{
+    width:14px;
+    flex:0 0 auto;
+    text-align:center;
+    font-size:11px;
+  }
+  .statK{
+    min-width:0;
+    font-size:8.5px;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:900;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .statV{
+    margin-top:2px;
+    font-size:13px;
+    font-weight:950;
+    letter-spacing:-0.01em;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .statB{
+    margin-top:1px;
+    font-size:9.5px;
+    color:var(--muted);
+    font-weight:800;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .miniCard{
+    padding:9px 10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+  .miniLeft{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .miniLabel{
+    font-size:9px;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:900;
+    white-space:nowrap;
+  }
+  .miniValue{
+    font-size:14px;
+    font-weight:950;
+    letter-spacing:-0.02em;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .miniSub{
+    font-size:10px;
+    font-weight:800;
+    color:var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .miniIcon{
+    width:36px;
+    height:36px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.09);
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size: 16px;
-    flex: 0 0 auto;
+    font-size:17px;
+    flex:0 0 auto;
+  }
+
+  .wear{ grid-column:2; grid-row:1; }
+  .bring{ grid-column:3; grid-row:1; }
+  .protect{ grid-column:2; grid-row:2; }
+  .dog{ grid-column:3; grid-row:2; }
+
+  .footer{
+    grid-column:1 / span 3;
+    grid-row:3;
+    display:grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap:8px;
+  }
+
+  .bar{
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 6px 18px rgba(0,0,0,.14);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:10px 12px;
+    min-width:0;
+  }
+  .barLeft{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .barLabel{
+    font-size:9px;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:900;
+    white-space:nowrap;
+  }
+  .barValue{
+    font-size:14px;
+    font-weight:950;
+    letter-spacing:-0.02em;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .barSub{
+    font-size:10px;
+    color:var(--muted);
+    font-weight:800;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .barIcon{
+    width:34px;
+    height:34px;
+    border-radius:11px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.09);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    flex:0 0 auto;
   }
 
   .hidden{ display:none !important; }
 
-  /* tiny right-side info slab */
-  .microStack{
-    display:grid;
-    grid-template-columns: 1fr;
-    gap: var(--gap);
-    overflow:hidden;
-  }
-
-  .microItem{
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.11);
-    background: rgba(0,0,0,.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 7px 8px;
-    box-shadow: var(--shadow2);
-    height: 58px;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    gap: 2px;
-  }
-
-  .microTop{
-    display:flex;
-    align-items:center;
-    gap: 6px;
-    min-width:0;
-  }
-
-  .microIcon{
-    width: 18px;
-    text-align:center;
-    flex: 0 0 auto;
-  }
-
-  .microK{
-    font-size: 9px;
-    letter-spacing: .11em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 900;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .microV{
-    font-size: 13px;
-    font-weight: 950;
-    letter-spacing: -0.02em;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    line-height:1.05;
-  }
-
-  .microB{
-    font-size: 9.5px;
-    color: var(--muted);
-    font-weight: 800;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    line-height:1.05;
-  }
-
-  @media (max-height: 340px){
-    .panel, .microItem{ height: 54px; }
-    .main{ grid-template-columns: 1.48fr .52fr; }
+  @media (max-height: 350px){
+    .grid{ grid-template-rows: 1fr 1fr 56px; }
+    .temp{ font-size:52px; }
+    .heroLine{ font-size:15px; }
+    .miniValue,.barValue,.statV{ font-size:12px; }
   }
 </style>
 </head>
@@ -310,24 +447,88 @@
     </div>
   </div>
 
-  <div class="dash main">
-    <div class="card">
-      <div class="cardHeader">
-        <div class="h" id="leftTitle">Do this</div>
-        <div class="h" id="leftHint">Best walk —</div>
-      </div>
-      <div class="body">
-        <div class="stack" id="stack"></div>
+  <div class="dash board">
+    <div class="meta">
+      <div class="place" id="placeLine">Local</div>
+      <div class="metaRight">
+        <div class="updated" id="updatedLine">Updated —</div>
+        <div class="headline" id="headlineLine">—</div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="cardHeader">
-        <div class="h" id="rightTitle">Info</div>
-        <div class="h" id="rightHint">Now</div>
+    <div class="grid">
+      <div class="card now">
+        <div class="nowTop">
+          <div class="nowLabel">Now</div>
+          <div class="nowMode" id="nowMode">☀️</div>
+        </div>
+
+        <div class="tempBlock">
+          <div class="tempMain">
+            <div class="temp" id="tempNow">—°</div>
+            <div class="feels" id="feelsNow">feels —°</div>
+          </div>
+          <div class="heroLine" id="heroLine">—</div>
+          <div class="heroSub" id="heroSub">—</div>
+        </div>
+
+        <div class="nowStats" id="nowStats"></div>
       </div>
-      <div class="body">
-        <div class="microStack" id="microStack"></div>
+
+      <div class="card miniCard wear" id="wearCard">
+        <div class="miniLeft">
+          <div class="miniLabel">Wear</div>
+          <div class="miniValue" id="wearValue">—</div>
+          <div class="miniSub" id="wearSub">—</div>
+        </div>
+        <div class="miniIcon" id="wearIcon">👖</div>
+      </div>
+
+      <div class="card miniCard bring" id="bringCard">
+        <div class="miniLeft">
+          <div class="miniLabel">Bring</div>
+          <div class="miniValue" id="bringValue">—</div>
+          <div class="miniSub" id="bringSub">—</div>
+        </div>
+        <div class="miniIcon" id="bringIcon">☔</div>
+      </div>
+
+      <div class="card miniCard protect" id="protectCard">
+        <div class="miniLeft">
+          <div class="miniLabel">Protect</div>
+          <div class="miniValue" id="protectValue">—</div>
+          <div class="miniSub" id="protectSub">—</div>
+        </div>
+        <div class="miniIcon" id="protectIcon">🕶️</div>
+      </div>
+
+      <div class="card miniCard dog" id="dogCard">
+        <div class="miniLeft">
+          <div class="miniLabel">Dog walk</div>
+          <div class="miniValue" id="dogValue">—</div>
+          <div class="miniSub" id="dogSub">—</div>
+        </div>
+        <div class="miniIcon">🐾</div>
+      </div>
+
+      <div class="footer">
+        <div class="bar">
+          <div class="barLeft">
+            <div class="barLabel">Best walk window</div>
+            <div class="barValue" id="walkValue">—</div>
+            <div class="barSub" id="walkSub">—</div>
+          </div>
+          <div class="barIcon">🕒</div>
+        </div>
+
+        <div class="bar">
+          <div class="barLeft">
+            <div class="barLabel">Rain timing</div>
+            <div class="barValue" id="rainValue">—</div>
+            <div class="barSub" id="rainSub">—</div>
+          </div>
+          <div class="barIcon">☔</div>
+        </div>
       </div>
     </div>
   </div>
@@ -346,6 +547,9 @@ function fmtTimeLocal(iso){
   if(!iso) return "—";
   const d = new Date(iso);
   return new Intl.DateTimeFormat([], { hour:"numeric", minute:"2-digit" }).format(d);
+}
+function fmtUpdated(d){
+  return new Intl.DateTimeFormat([], { weekday:"short", hour:"numeric", minute:"2-digit" }).format(d);
 }
 function sameHourIndex(timeArr, now){
   const nowMs = now.getTime();
@@ -368,7 +572,6 @@ function maxNextN(arr, start, n){
 }
 function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
 
-/* logic */
 function clothingPlan(apparentF, windMph){
   const hotBias = RUN_HOT ? 4 : 0;
   const a = apparentF + hotBias;
@@ -403,6 +606,7 @@ function sunglassesNeeded(isDayNow, uvNow, minutesToOrFromSunEvent){
   return uvOk || lowSun;
 }
 function umbrellaNeeded(precipProbMax4h){ return (precipProbMax4h ?? 0) >= 30; }
+
 function dogWalkRating(apparentF, windMph, precipProbMax4h){
   const hotBias = RUN_HOT ? 4 : 0;
   const a = apparentF + hotBias;
@@ -416,6 +620,7 @@ function dogWalkRating(apparentF, windMph, precipProbMax4h){
   if (a < 45) return { label:"Bundle up", emoji:"🥶", note:"Cold paws" };
   return { label:"Okay", emoji:"🐕", note:"" };
 }
+
 function timeToRain(timeArr, precipProbArr, startIdx, lookAheadHours=8, threshold=50){
   for (let i=0;i<lookAheadHours;i++){
     const p = precipProbArr[startIdx+i];
@@ -429,6 +634,7 @@ function timeToRain(timeArr, precipProbArr, startIdx, lookAheadHours=8, threshol
   }
   return null;
 }
+
 function bestWalkWindow(hourly, startIdx, hoursAhead=8){
   const target = RUN_HOT ? 64 : 62;
   const times = hourly.time, feels = hourly.apparent_temperature, rainP = hourly.precipitation_probability, wind = hourly.windspeed_10m;
@@ -446,7 +652,6 @@ function bestWalkWindow(hourly, startIdx, hoursAhead=8){
   return best;
 }
 
-/* APIs */
 async function geocodeZip(zip){
   const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(zip)}&count=1&language=en&format=json&t=${Date.now()}`;
   const r = await fetch(url, { cache:"no-store" });
@@ -481,7 +686,6 @@ async function fetchForecast(lat, lon, tz){
   return r.json();
 }
 
-/* theme */
 function bucketFromWeathercode(code){
   if (code === 0) return "clear";
   if ([1,2].includes(code)) return "partly";
@@ -523,22 +727,17 @@ function nextSunEvent(daily, now){
   c.sort((a,b)=>a.when-b.when);
   return c[0];
 }
+
 function applyAutoMode(isDay){
   const root = document.documentElement.style;
   if (isDay){
     root.setProperty("--fg","rgba(0,0,0,.92)");
     root.setProperty("--muted","rgba(0,0,0,.55)");
-    root.setProperty("--glass","rgba(255,255,255,.72)");
-    root.setProperty("--glass2","rgba(255,255,255,.46)");
     root.setProperty("--stroke","rgba(255,255,255,.92)");
-    root.setProperty("--stroke2","rgba(255,255,255,.70)");
   } else {
     root.setProperty("--fg","rgba(255,255,255,.92)");
     root.setProperty("--muted","rgba(255,255,255,.66)");
-    root.setProperty("--glass","rgba(255,255,255,.10)");
-    root.setProperty("--glass2","rgba(255,255,255,.06)");
-    root.setProperty("--stroke","rgba(255,255,255,.18)");
-    root.setProperty("--stroke2","rgba(255,255,255,.12)");
+    root.setProperty("--stroke","rgba(255,255,255,.14)");
   }
 }
 function applyTheme({timePhase, condition, umbrella, sunscreen, sunglasses, jacket, tempNow, isDay}){
@@ -591,36 +790,21 @@ function sceneSVG({isDay}){
     : `<svg viewBox="0 0 844 390" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="844" height="390" fill="rgba(0,0,0,.08)"/></svg>`;
 }
 
-/* UI */
 function setScene(html){ $("scene").innerHTML = html; }
-function setStack(cards){
-  const trimmed = cards.filter(c=>!c.hidden).slice(0,6);
-  $("stack").innerHTML = trimmed.map(c => `
-    <div class="panel">
-      <div class="left">
-        <div class="label">${c.label}</div>
-        <div class="value">${c.value}</div>
-        ${c.sub ? `<div class="sub">${c.sub}</div>` : ``}
+
+function setNowStats(items){
+  $("nowStats").innerHTML = items.map(it => `
+    <div class="stat">
+      <div class="statTop">
+        <div class="statIcon">${it.i}</div>
+        <div class="statK">${it.k}</div>
       </div>
-      <div class="icon" aria-hidden="true">${c.icon}</div>
-    </div>
-  `).join("");
-}
-function setMicro(items){
-  const trimmed = items.filter(i=>!i.hidden).slice(0,4);
-  $("microStack").innerHTML = trimmed.map(it => `
-    <div class="microItem">
-      <div class="microTop">
-        <div class="microIcon" aria-hidden="true">${it.i}</div>
-        <div class="microK">${it.k}</div>
-      </div>
-      <div class="microV">${it.v}</div>
-      ${it.b ? `<div class="microB">${it.b}</div>` : ``}
+      <div class="statV">${it.v}</div>
+      ${it.b ? `<div class="statB">${it.b}</div>` : ``}
     </div>
   `).join("");
 }
 
-/* GPS */
 let LAST_POS = null;
 function getGPSPosition(timeoutMs=6500){
   return new Promise((resolve, reject) => {
@@ -646,8 +830,8 @@ async function getLocation(){
   }
 }
 
-/* refresh */
 let _timer=null;
+
 async function refresh(){
   try{
     const now = new Date();
@@ -699,33 +883,18 @@ async function refresh(){
     setScene(sceneSVG({isDay:isDayNow}));
 
     const placeText = place ? `${place.name}${place.admin1 ? ", " + place.admin1 : ""}` : (loc.source.startsWith("gps") ? "Local" : `ZIP ${FALLBACK_ZIP}`);
-    $("leftTitle").textContent = placeText;
-    $("headline").textContent = `Updated ${new Intl.DateTimeFormat([], { hour:"numeric", minute:"2-digit" }).format(new Date())}`;
+    $("placeLine").textContent = placeText;
+    $("updatedLine").textContent = `Updated ${fmtUpdated(new Date())}`;
 
-    $("leftHint").textContent = `Best walk: ${bestText}`;
-    $("rightHint").textContent = isDayNow ? "Day" : "Night";
+    const headlineBits = [];
+    headlineBits.push(`${outfit.bottoms}/${outfit.sleeves.includes("Long") ? "long" : "short"} sleeves`);
+    if (jacket) headlineBits.push("jacket");
+    if (umbrella) headlineBits.push("umbrella");
+    if (sunglasses) headlineBits.push("sunglasses");
+    if (sunscreen) headlineBits.push("sunscreen");
+    $("headlineLine").textContent = headlineBits.join(" • ");
 
-    const wearIcon = outfit.bottoms === "Shorts" ? "🩳" : "👖";
-    const bringList = [];
-    if (jacket) bringList.push("Jacket");
-    if (umbrella) bringList.push("Umbrella");
-    const protectList = [];
-    if (sunscreen) protectList.push("Sunscreen");
-    if (sunglasses) protectList.push("Sunglasses");
-
-    const rainSub = ttr ? `Rain ≥50%: ${ttr.text}` : `Next 8h max ${round(maxNextN(h.precipitation_probability, idx, 8))}%`;
-    const walkSub = best ? `Feels ~${round(best.feelsAvg)}° • Rain ~${round(best.rainAvg)}%` : `Feels now ${round(appNow)}°`;
-
-    setStack([
-      { label:"Now", value:`${round(tempNow)}° • feels ${round(appNow)}°`, sub:`Wind ${round(windNow)} mph • Cloud ${round(cloudNow)}%`, icon: isDayNow ? "📍" : "🌙" },
-      { label:"Wear", value:`${outfit.bottoms} • ${outfit.sleeves}`, sub:`run-hot tuned`, icon: wearIcon },
-      { label:"Bring", value: bringList.length ? bringList.join(" + ") : "Nothing extra", sub: rainSub, icon: umbrella ? "☔" : (jacket ? "🧥" : "✅"), hidden: (bringList.length === 0 && !ttr) },
-      { label:"Protect", value: protectList.length ? protectList.join(" + ") : "No extras", sub: isDayNow ? `UV max ${round(uvMax4h)}` : "Night", icon: sunglasses ? "🕶️" : (sunscreen ? "🧴" : "✨"), hidden: (protectList.length === 0) },
-      { label:"Dog", value: dog.label, sub: dog.note || `Wind ${round(windNow)} mph`, icon:"🐾" },
-      { label:"Walk", value: bestText, sub: walkSub, icon:"🕒", hidden: !best }
-    ]);
-
-    const conditionEmoji =
+    $("nowMode").textContent =
       condition === "clear"  ? (isDayNow ? "☀️" : "🌙") :
       condition === "partly" ? "🌤️" :
       condition === "cloudy" ? "☁️" :
@@ -734,20 +903,53 @@ async function refresh(){
       condition === "snow"   ? "🌨️" :
       condition === "storm"  ? "⛈️" : "☁️";
 
+    $("tempNow").textContent = `${round(tempNow)}°`;
+    $("feelsNow").textContent = `feels ${round(appNow)}°`;
+    $("heroLine").textContent = `${outfit.bottoms} • ${outfit.sleeves}`;
+    $("heroSub").textContent = `${placeText} • wind ${round(windNow)} mph`;
+
     const nextSun = nextSunEvent(d, now);
     const nextSunTxt = nextSun ? `${nextSun.type} ${fmtTimeLocal(nextSun.when.toISOString())}` : "—";
     const sunEmoji = nextSun ? (nextSun.type === "Sunrise" ? "🌅" : "🌇") : "🗓️";
 
-    setMicro([
-      { i: conditionEmoji, k:"Condition", v: cap(condition), b: placeText },
-      { i: "☔", k:"Rain 4h", v: `${round(precipMax4h)}%`, b: umbrella ? "Bring umbrella" : "" },
-      { i: "🔆", k:"UV", v: isDayNow ? `${round(uvNow)}` : "—", b: isDayNow ? `max ${round(uvMax4h)}` : "" },
-      { i: sunEmoji, k:"Next sun", v: nextSunTxt, b: `Hi ${round(hi)}° / Lo ${round(lo)}°` }
+    setNowStats([
+      { i:"☁️", k:"Condition", v: cap(condition), b: isDayNow ? "Day" : "Night" },
+      { i:"☔", k:"Rain 4h", v: `${round(precipMax4h)}%`, b: umbrella ? "Bring umbrella" : "Low risk" },
+      { i:"🔆", k:"UV", v: isDayNow ? `${round(uvNow)}` : "—", b: isDayNow ? `max ${round(uvMax4h)}` : "Night" },
+      { i:sunEmoji, k:"Next sun", v: nextSunTxt, b: `Hi ${round(hi)}° / Lo ${round(lo)}°` }
     ]);
 
+    const wearIcon = outfit.bottoms === "Shorts" ? "🩳" : "👖";
+    $("wearValue").textContent = `${outfit.bottoms} • ${outfit.sleeves}`;
+    $("wearSub").textContent = "run-hot tuned";
+    $("wearIcon").textContent = wearIcon;
+
+    const bringList = [];
+    if (jacket) bringList.push("Jacket");
+    if (umbrella) bringList.push("Umbrella");
+    $("bringValue").textContent = bringList.length ? bringList.join(" + ") : "Nothing extra";
+    $("bringSub").textContent = ttr ? `Rain ≥50%: ${ttr.text}` : `Next 8h max ${round(maxNextN(h.precipitation_probability, idx, 8))}%`;
+    $("bringIcon").textContent = umbrella ? "☔" : (jacket ? "🧥" : "✅");
+
+    const protectList = [];
+    if (sunscreen) protectList.push("Sunscreen");
+    if (sunglasses) protectList.push("Sunglasses");
+    $("protectValue").textContent = protectList.length ? protectList.join(" + ") : "No extras";
+    $("protectSub").textContent = isDayNow ? `UV max ${round(uvMax4h)}` : "Night";
+    $("protectIcon").textContent = sunglasses ? "🕶️" : (sunscreen ? "🧴" : "✨");
+
+    $("dogValue").textContent = dog.label;
+    $("dogSub").textContent = dog.note || `Wind ${round(windNow)} mph`;
+
+    $("walkValue").textContent = bestText;
+    $("walkSub").textContent = best ? `Feels ~${round(best.feelsAvg)}° • Rain ~${round(best.rainAvg)}%` : `Feels now ${round(appNow)}°`;
+
+    $("rainValue").textContent = ttr ? ttr.text : "No near rain";
+    $("rainSub").textContent = ttr ? "Time until ≥50% rain risk" : `4h max ${round(precipMax4h)}%`;
   } catch (e){
     console.error(e);
-    $("headline").textContent = "Offline • check Wi-Fi";
+    $("updatedLine").textContent = "Offline";
+    $("headlineLine").textContent = "Check Wi-Fi";
   }
 }
 
