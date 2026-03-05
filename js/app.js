@@ -112,23 +112,23 @@ function timeToRain(hourly, idx, now){
     if (p != null && p >= 50) {
       const t = new Date(hourly.time[idx + i]);
       const mins = Math.max(0, Math.round((t - now) / 60000));
-      if (mins <= 5) return { text: "Now", sub: "Rain starting now" };
-      if (mins < 60) return { text: `~${mins}m`, sub: "Rain within the hour" };
-      return { text: `~${Math.round(mins/60)}h`, sub: "Rain later" };
+      if (mins <= 5) return { text: "Rain starting now", urgent: true };
+      if (mins < 60) return { text: `Rain in ~${mins}m`, urgent: true };
+      return { text: `Rain later • ~${Math.round(mins/60)}h`, urgent: false };
     }
   }
-  return { text: "No near rain", sub: "Nothing imminent" };
+  return { text: "", urgent: false };
 }
 function walkAssessment(hourly, idx, now, nextSun){
   const feels = hourly.apparent_temperature[idx] + (RUN_HOT ? 4 : 0);
-  const rainNow = hourly.precipitation_probability[idx] ?? 0;
   const best = bestWalkWindow(hourly, idx);
+  const rainSoon = timeToRain(hourly, idx, now);
 
   let status = "Okay";
   let icon = "🐾";
   let cls = "";
 
-  if (rainNow >= 50) { status = "Plan around rain"; icon = "☔"; cls = "walk-rain-alert"; }
+  if (rainSoon.urgent) { status = "Plan around rain"; icon = "☔"; cls = "walk-rain-alert"; }
   else if (feels >= 82) { status = "Keep it short"; icon = "🥵"; cls = "walk-warm"; }
   else if (feels >= 72) { status = "Warm but fine"; icon = "😅"; cls = "walk-warm"; }
   else if (feels >= 55) { status = "Perfect now"; icon = "🐾"; cls = "walk-ideal"; }
@@ -145,17 +145,15 @@ function walkAssessment(hourly, idx, now, nextSun){
     const minutesToSun = Math.round((nextSun.time - now) / 60000);
     if (minutesToSun > 0 && minutesToSun <= 75) {
       cls = "walk-golden";
-      secondary = `${nextSun.label} glow soon • ${secondary}`;
+      secondary = `Great light soon • ${secondary}`;
     }
   }
 
-  const soonRain = timeToRain(hourly, idx, now);
-  if (soonRain.text !== "No near rain" && (soonRain.text === "Now" || soonRain.text.includes("m"))) {
-    cls = "walk-rain-alert";
-    secondary = soonRain.sub;
+  if (rainSoon.text && !rainSoon.urgent) {
+    secondary = rainSoon.text;
   }
 
-  return { status, secondary, icon, cls, best };
+  return { status, secondary, icon, cls };
 }
 async function getLocation(){
   return new Promise((resolve) => {
@@ -164,9 +162,7 @@ async function getLocation(){
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude, label: "Local" });
-      },
+      (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude, label: "Local" }),
       () => resolve({ lat: FALLBACK.lat, lon: FALLBACK.lon, label: FALLBACK.label }),
       { maximumAge: 10 * 60 * 1000, timeout: 6000, enableHighAccuracy: false }
     );
@@ -208,12 +204,6 @@ function setStats(items){
     </div>
   `).join("");
 }
-function setParallax(weatherCode, isDay){
-  const mx = isDay ? 6 : 3;
-  const my = weatherCode === 0 ? -4 : 2;
-  document.documentElement.style.setProperty("--mx", `${mx}px`);
-  document.documentElement.style.setProperty("--my", `${my}px`);
-}
 async function refresh(){
   try {
     const now = new Date();
@@ -240,22 +230,28 @@ async function refresh(){
     const lo = d.temperature_2m_min?.[0];
     const nextSun = nextSunEvent(d, now);
 
-    document.querySelector('meta[name="theme-color"]').setAttribute("content", isDay ? "#fbfcff" : "#070812");
-    setParallax(weatherCode, isDay);
+    const placeText = label || loc.label;
 
-    $("placeLine").textContent = label || loc.label;
+    $("placeLine").textContent = placeText;
     $("tempNow").textContent = `${round(temp)}°`;
     $("feelsNow").textContent = `feels ${round(feels)}°`;
     $("modeIcon").textContent = weatherEmoji(weatherCode, isDay);
-    $("heroLine").textContent = conditionText(weatherCode);
-    $("heroSub").textContent = `${round(wind)} mph wind • ${round(cloud)}% cloud`;
+    $("conditionLine").textContent = conditionText(weatherCode);
+
+    const nowSub = `${round(wind)} mph wind • ${round(cloud)}% cloud`;
+    document.title = `Leave the House • ${round(temp)}°`;
 
     setStats([
       { icon: "🔆", k: "UV", v: isDay ? `${round(uvNow)}` : "—", b: isDay ? `max ${round(uv4h)}` : "Night" },
-      { icon: "☔", k: "Rain 4h", v: `${round(rain4h)}%`, b: rain4h >= 35 ? "Pack umbrella" : "Low risk" },
       { icon: nextSun?.icon || "🗓️", k: "Next sun", v: nextSun ? `${nextSun.label} ${fmtShortTime(nextSun.time)}` : "—", b: `Hi ${round(hi)}° / Lo ${round(lo)}°` },
-      { icon: "📍", k: "Updated", v: "Now", b: label || loc.label }
+      { icon: "💨", k: "Wind", v: `${round(wind)} mph`, b: "Current" },
+      { icon: "☁️", k: "Cloud", v: `${round(cloud)}%`, b: "Current" }
     ]);
+
+    // use heroSub nowhere; keep card clean
+    // inject location + ambient once in subtitle area using existing node not repeated elsewhere
+    const heroSubNode = document.querySelector(".heroSub");
+    if (heroSubNode) heroSubNode.textContent = nowSub;
 
     const wear = clothingPlan(feels);
     $("wearValue").textContent = wear.text;
@@ -279,18 +275,11 @@ async function refresh(){
 
     const walk = walkAssessment(h, idx, now, nextSun);
     const walkCard = $("walkCard");
-    walkCard.className = "card mini walk walkCard";
+    walkCard.className = "card mini walkCard";
     if (walk.cls) walkCard.classList.add(walk.cls);
-    $("walkPrimary").textContent = walk.status;
-    $("walkSecondary").textContent = walk.secondary;
+    $("walkValue").textContent = walk.status;
+    $("walkSub").textContent = walk.secondary;
     $("walkIcon").textContent = walk.icon;
-
-    $("contextValue").textContent = isDay ? "Daylight mode" : "Night mode";
-    $("contextSub").textContent = isDay ? `${label || loc.label}` : `${label || loc.label}`;
-
-    const rainTiming = timeToRain(h, idx, now);
-    $("rainValue").textContent = rainTiming.text;
-    $("rainSub").textContent = rainTiming.sub;
 
     lastRefreshTime = Date.now();
     updateMinutesSince();
