@@ -43,16 +43,21 @@ body{
 }
 .actionsStack{
   min-height:0;
-  display:grid;
-  grid-template-columns:1fr;
-  grid-template-rows:repeat(4,minmax(0,1fr));
+  display:flex;
+  flex-direction:column;
   gap:var(--gap);
+}
+.actionsStack > .card{
+  flex:1 1 0;
+  min-height:0;
 }
 .action{
   padding:14px;
-  display:grid;
-  grid-template-rows:auto auto 1fr;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
   gap:8px;
+  overflow:hidden;
 }
 .actionTop{
   display:flex;
@@ -269,4 +274,33 @@ body{
 #bringCard .actionSub{
   letter-spacing:-0.01em;
   opacity:.9;
+}
+
+
+/* v11 visibility fixes */
+.actionTop, .actionValue, .actionSub, .actionSubTertiary, .walkWindows {
+  min-width: 0;
+}
+.actionValue{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.actionSub, .actionSubTertiary{
+  display:block;
+}
+.walkCard{
+  justify-content:flex-start;
+}
+@media (orientation:portrait){
+  .actionsStack{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-auto-rows:minmax(160px, auto);
+    gap:var(--gap);
+  }
+  .actionsStack > .card{
+    flex:none;
+  }
+  .walkCard{grid-column:1/-1}
 }
