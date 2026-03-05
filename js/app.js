@@ -65,16 +65,77 @@ function conditionText(code){
   if (code >= 95 && code <= 99) return "Storm";
   return "Cloudy";
 }
-function clothingPlan(feelsLikeF){
+function clothingPlan(tempF, feelsLikeF, windMph, rain4h, uvNow, isDay){
   const t = feelsLikeF + (RUN_HOT ? 4 : 0);
-  if (t >= 75) return { text: "Shorts + short sleeves", icon: "🩳", sub: "Warm enough now" };
-  if (t >= 55) return { text: "Pants + short sleeves", icon: "👖", sub: "Comfortable if moving" };
-  return { text: "Pants + long sleeves", icon: "👖", sub: "Cool enough for layers" };
+
+  let base = "";
+  let jacket = "";
+  let accessories = [];
+  let icon = "👖";
+
+  if (t >= 75) {
+    base = "Shorts + short sleeves";
+    icon = "🩳";
+  } else if (t >= 60) {
+    base = "Pants + short sleeves";
+    icon = "👖";
+  } else if (t >= 48) {
+    base = "Pants + long sleeves";
+    icon = "👖";
+  } else {
+    base = "Warm layers";
+    icon = "🧥";
+  }
+
+  if (rain4h >= 40) {
+    if (t <= 50) jacket = "Rain jacket over layers";
+    else jacket = "Rain jacket";
+  } else if (windMph >= 18 && t <= 62) {
+    jacket = "Windbreaker";
+  } else if (t <= 32) {
+    jacket = "Heavy winter coat";
+  } else if (t <= 42) {
+    jacket = "Heavy jacket";
+  } else if (t <= 52) {
+    jacket = "Light jacket";
+  } else if (t <= 60 && windMph >= 12) {
+    jacket = "Light jacket";
+  }
+
+  if (t <= 40) accessories.push("hat");
+  if (t <= 32) accessories.push("scarf");
+  if (t <= 30) accessories.push("gloves");
+  if (t <= 40) accessories.push("hat");
+  if (t <= 32) accessories.push("scarf");
+  if (t <= 30) accessories.push("gloves");
+
+  const main = jacket ? `${base} + ${jacket}` : base;
+  let sub = accessories.length ? accessories.join(" • ") : "No extra layers";
+  if (windMph >= 20) sub = `windy • ${sub}`;
+  return { text: main, icon, sub };
 }
-function bringPlan(tempF, feelsLikeF, rain4h){
+function bringPlan(tempF, feelsLikeF, windMph, hourly, idx, now){
   const items = [];
-  if (Math.min(tempF, feelsLikeF) <= 52) items.push({ label: "Jacket", icon: "🧥" });
-  if (rain4h >= 35) items.push({ label: "Umbrella", icon: "☔" });
+  let umbrella = false;
+
+  const currentRain = hourly.precipitation_probability[idx] ?? 0;
+  let rainWithin90 = false;
+  let peak90 = currentRain;
+
+  for (let i = 0; i <= 2; i++) {
+    const p = hourly.precipitation_probability[idx + i];
+    if (p == null) continue;
+    peak90 = Math.max(peak90, p);
+    if (i <= 1 && p >= 45) rainWithin90 = true;
+  }
+
+  if (currentRain >= 35 || rainWithin90 || peak90 >= 60) {
+    umbrella = true;
+  }
+
+  if (umbrella) items.push({ label: "Umbrella", icon: "☔" });
+  else if (windMph >= 22 && feelsLikeF <= 58) items.push({ label: "Windbreaker", icon: "🧥" });
+
   return items;
 }
 function protectPlan(uvNow, isDay){
@@ -103,7 +164,7 @@ function estimatePawRisk(tempF, isDay, cloud, uv){
   return { label: "Paws okay", level: "low" };
 }
 function dryWindowCountdown(hourly, idx, now){
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 3; i++) {
     const p = hourly.precipitation_probability[idx + i];
     if (p != null && p >= 50) {
       const t = new Date(hourly.time[idx + i]);
@@ -113,7 +174,7 @@ function dryWindowCountdown(hourly, idx, now){
       return `Dry for ~${Math.round(mins/60)}h`;
     }
   }
-  return "Dry for the next few hours";
+  return "Dry for the next 2 hours";
 }
 
 function rainTimingSummary(hourly, idx, now){
@@ -122,35 +183,28 @@ function rainTimingSummary(hourly, idx, now){
   let peak = current;
   let peakIndex = idx;
 
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 3; i++) {
     const p = hourly.precipitation_probability[idx + i];
     if (p == null) continue;
     if (first === null && p >= 35) first = idx + i;
-    if (p > peak){
+    if (p > peak) {
       peak = p;
       peakIndex = idx + i;
     }
   }
 
-  let line1 = `${Math.round(peak)}% chance`;
-  if (current >= 35) {
-    line1 = `${Math.round(current)}% chance now`;
-  }
-
+  let line1 = current >= 35 ? `${Math.round(current)}% chance now` : `${Math.round(peak)}% chance`;
   let line2 = "Low rain risk soon";
-  if (first !== null){
+
+  if (first !== null) {
     const t = new Date(hourly.time[first]);
     const mins = Math.max(0, Math.round((t - now) / 60000));
     if (mins <= 5) line2 = "Starting now";
     else if (mins < 60) line2 = `Starting in ${mins}m`;
-    else {
-      const hrs = Math.floor(mins / 60);
-      const rem = mins % 60;
-      line2 = rem === 0 ? `Starting in ${hrs}h` : `Starting in ${hrs}h ${rem}m`;
-    }
+    else line2 = `Starting in ${Math.round(mins/60)}h`;
   } else if (peak >= 20) {
     const t = new Date(hourly.time[peakIndex]);
-    line2 = `Peak near ${new Intl.DateTimeFormat([], { hour: "numeric", minute: "2-digit" }).format(t)}`;
+    line2 = `Peak near ${fmtShortTime(t)}`;
   }
 
   return { line1, line2, peak, current };
@@ -256,12 +310,12 @@ async function refresh(){
       { icon: "💨", k: "Wind", v: `${round(wind)} mph`, b: "Current" }
     ]);
 
-    const wear = clothingPlan(feels);
+    const wear = clothingPlan(temp, feels, wind, rain4h, uvNow, isDay);
     $("wearValue").textContent = wear.text;
     $("wearSub").textContent = wear.sub;
     $("wearIcon").textContent = wear.icon;
 
-    const bring = bringPlan(temp, feels, rain4h);
+    const bring = bringPlan(temp, feels, wind, h, idx, now);
     const rainInfo = rainTimingSummary(h, idx, now);
     const showBring = bring.length > 0;
     $("bringCard").classList.toggle("hidden", !showBring);

@@ -304,3 +304,17 @@ body{
   }
   .walkCard{grid-column:1/-1}
 }
+
+
+/* v12 richer wear text */
+#wearCard .actionValue{
+  font-size:20px;
+}
+#wearCard .actionSub{
+  font-size:10px;
+  line-height:1.2;
+}
+#bringCard .actionSub{
+  letter-spacing:-0.01em;
+  opacity:.92;
+}
