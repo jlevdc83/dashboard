@@ -49,6 +49,7 @@
 
   .scene{ position:fixed; inset:0; z-index:0; pointer-events:none; }
   .scene svg{ width:100%; height:100%; display:block; }
+
   .mist{
     position:fixed; inset:-60px; z-index:0; pointer-events:none;
     filter: blur(18px);
@@ -65,10 +66,9 @@
     height:100svh;
     height:100dvh;
     display:grid;
-    grid-template-rows: auto 1fr;
-    gap: var(--gap);
-    padding: 6px var(--pad);
+    grid-template-rows: 1fr;
     overflow:hidden;
+    padding: 6px var(--pad);
   }
 
   .rotateHint{
@@ -86,79 +86,16 @@
   }
   .rotateHint .t{ font-size: 14px; font-weight: 900; }
   .rotateHint .s{ margin-top: 4px; font-size: 11px; color: var(--muted); font-weight: 700; }
+
   @media (orientation: portrait){
     .dash{ display:none !important; }
     .rotateHint{ display:flex; }
   }
 
-  /* SUPER COMPACT HEADER */
-  .topGlass{
-    border-radius: 12px;
-    border: 1px solid var(--stroke);
-    background:
-      radial-gradient(220px 50px at 16% 0%, rgba(255,255,255,.34), transparent 64%),
-      linear-gradient(180deg,
-        color-mix(in srgb, var(--glass) 72%, transparent),
-        color-mix(in srgb, var(--glass2) 88%, transparent)
-      );
-    backdrop-filter: blur(14px) saturate(1.15);
-    -webkit-backdrop-filter: blur(14px) saturate(1.15);
-    box-shadow: 0 8px 18px rgba(0,0,0,.14);
-    overflow:hidden;
-    position:relative;
-  }
-  .topGlass::after{
-    content:""; position:absolute; inset:0; border-radius:12px; pointer-events:none;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.42);
-    opacity:.42;
-  }
-  .topInner{
-    padding: 5px 8px;
-    display:grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-    align-items:center;
-    min-height: 34px;
-  }
-  .locLine{
-    font-size: 9px;
-    letter-spacing: .10em;
-    text-transform: uppercase;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow:hidden;
-    text-overflow: ellipsis;
-    max-width: 520px;
-  }
-  .rightTop{
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    gap: 1px;
-    min-width: 180px;
-  }
-  .updated{
-    font-size: 10px;
-    color: var(--muted);
-    white-space: nowrap;
-    line-height:1;
-  }
-  .headline{
-    font-size: 10px;
-    font-weight: 900;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow:hidden;
-    text-overflow: ellipsis;
-    max-width: 260px;
-    text-align:right;
-    line-height:1.05;
-  }
-
   .main{
     min-height:0;
     display:grid;
-    grid-template-columns: 1.42fr .58fr; /* much smaller right column */
+    grid-template-columns: 1.42fr .58fr;
     gap: var(--gap);
     overflow:hidden;
   }
@@ -177,20 +114,34 @@
     position: relative;
     min-height:0;
   }
+
   .card::after{
-    content:""; position:absolute; inset:0; pointer-events:none; border-radius: var(--r);
+    content:"";
+    position:absolute; inset:0;
+    pointer-events:none;
+    border-radius: var(--r);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.34);
     opacity:.35;
   }
+
   .cardHeader{
     padding: 5px 8px 4px;
-    display:flex; align-items:center; justify-content:space-between; gap: 8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 8px;
   }
+
   .cardHeader .h{
-    font-size: 10px; font-weight: 900; letter-spacing: .02em;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .02em;
     color: var(--muted);
     white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
+
   .body{
     padding: 0 8px 8px;
     min-height:0;
@@ -203,6 +154,7 @@
     gap: var(--gap);
     overflow:hidden;
   }
+
   .panel{
     border-radius: var(--r2);
     border: 1px solid rgba(255,255,255,.11);
@@ -218,7 +170,14 @@
     height: 58px;
     overflow:hidden;
   }
-  .panel .left{ min-width:0; display:flex; flex-direction:column; gap: 1px; }
+
+  .panel .left{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap: 1px;
+  }
+
   .label{
     font-size: 9px;
     letter-spacing: .11em;
@@ -228,6 +187,7 @@
     white-space:nowrap;
     line-height:1;
   }
+
   .value{
     font-size: 13px;
     font-weight: 950;
@@ -237,6 +197,7 @@
     text-overflow:ellipsis;
     line-height:1.05;
   }
+
   .sub{
     font-size: 9.5px;
     font-weight: 800;
@@ -246,23 +207,30 @@
     text-overflow:ellipsis;
     line-height:1.05;
   }
+
   .icon{
-    width: 34px; height: 34px; border-radius: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
     border: 1px solid rgba(255,255,255,.12);
     background: rgba(255,255,255,.09);
-    display:flex; align-items:center; justify-content:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     font-size: 16px;
     flex: 0 0 auto;
   }
+
   .hidden{ display:none !important; }
 
-  /* RIGHT SIDE: not pills; one tiny vertical info slab */
+  /* tiny right-side info slab */
   .microStack{
     display:grid;
     grid-template-columns: 1fr;
     gap: var(--gap);
     overflow:hidden;
   }
+
   .microItem{
     border-radius: 12px;
     border: 1px solid rgba(255,255,255,.11);
@@ -278,17 +246,20 @@
     justify-content:center;
     gap: 2px;
   }
+
   .microTop{
     display:flex;
     align-items:center;
     gap: 6px;
     min-width:0;
   }
+
   .microIcon{
     width: 18px;
     text-align:center;
     flex: 0 0 auto;
   }
+
   .microK{
     font-size: 9px;
     letter-spacing: .11em;
@@ -299,6 +270,7 @@
     overflow:hidden;
     text-overflow:ellipsis;
   }
+
   .microV{
     font-size: 13px;
     font-weight: 950;
@@ -308,6 +280,7 @@
     text-overflow:ellipsis;
     line-height:1.05;
   }
+
   .microB{
     font-size: 9.5px;
     color: var(--muted);
@@ -328,7 +301,6 @@
 <body>
 <div class="scene" id="scene"></div>
 <div class="mist"></div>
-<div class="grain"></div>
 
 <div class="app">
   <div class="rotateHint">
@@ -338,20 +310,10 @@
     </div>
   </div>
 
-  <div class="dash topGlass">
-    <div class="topInner">
-      <div class="locLine" id="locLine">Leave-the-House</div>
-      <div class="rightTop">
-        <div class="updated" id="updatedAt">Updated —</div>
-        <div class="headline" id="headline">—</div>
-      </div>
-    </div>
-  </div>
-
   <div class="dash main">
     <div class="card">
       <div class="cardHeader">
-        <div class="h">Do this</div>
+        <div class="h" id="leftTitle">Do this</div>
         <div class="h" id="leftHint">Best walk —</div>
       </div>
       <div class="body">
@@ -361,7 +323,7 @@
 
     <div class="card">
       <div class="cardHeader">
-        <div class="h">Info</div>
+        <div class="h" id="rightTitle">Info</div>
         <div class="h" id="rightHint">Now</div>
       </div>
       <div class="body">
@@ -384,9 +346,6 @@ function fmtTimeLocal(iso){
   if(!iso) return "—";
   const d = new Date(iso);
   return new Intl.DateTimeFormat([], { hour:"numeric", minute:"2-digit" }).format(d);
-}
-function fmtUpdated(d){
-  return new Intl.DateTimeFormat([], { weekday:"short", hour:"numeric", minute:"2-digit" }).format(d);
 }
 function sameHourIndex(timeArr, now){
   const nowMs = now.getTime();
@@ -740,19 +699,11 @@ async function refresh(){
     setScene(sceneSVG({isDay:isDayNow}));
 
     const placeText = place ? `${place.name}${place.admin1 ? ", " + place.admin1 : ""}` : (loc.source.startsWith("gps") ? "Local" : `ZIP ${FALLBACK_ZIP}`);
-    $("locLine").textContent = `Leave-the-House • ${placeText}`;
-    $("updatedAt").textContent = `Updated ${fmtUpdated(new Date())}`;
-
-    const headlineBits = [];
-    headlineBits.push(`${outfit.bottoms}/${outfit.sleeves.includes("Long") ? "long" : "short"} sleeves`);
-    if (jacket) headlineBits.push("jacket");
-    if (umbrella) headlineBits.push("umbrella");
-    if (sunglasses) headlineBits.push("sunglasses");
-    if (sunscreen) headlineBits.push("sunscreen");
-    $("headline").textContent = headlineBits.join(" • ");
+    $("leftTitle").textContent = placeText;
+    $("headline").textContent = `Updated ${new Intl.DateTimeFormat([], { hour:"numeric", minute:"2-digit" }).format(new Date())}`;
 
     $("leftHint").textContent = `Best walk: ${bestText}`;
-    $("rightHint").textContent = `Compact`;
+    $("rightHint").textContent = isDayNow ? "Day" : "Night";
 
     const wearIcon = outfit.bottoms === "Shorts" ? "🩳" : "👖";
     const bringList = [];
@@ -788,7 +739,7 @@ async function refresh(){
     const sunEmoji = nextSun ? (nextSun.type === "Sunrise" ? "🌅" : "🌇") : "🗓️";
 
     setMicro([
-      { i: conditionEmoji, k:"Condition", v: cap(condition), b: isDayNow ? "Day" : "Night" },
+      { i: conditionEmoji, k:"Condition", v: cap(condition), b: placeText },
       { i: "☔", k:"Rain 4h", v: `${round(precipMax4h)}%`, b: umbrella ? "Bring umbrella" : "" },
       { i: "🔆", k:"UV", v: isDayNow ? `${round(uvNow)}` : "—", b: isDayNow ? `max ${round(uvMax4h)}` : "" },
       { i: sunEmoji, k:"Next sun", v: nextSunTxt, b: `Hi ${round(hi)}° / Lo ${round(lo)}°` }
@@ -796,7 +747,6 @@ async function refresh(){
 
   } catch (e){
     console.error(e);
-    $("updatedAt").textContent = "Updated —";
     $("headline").textContent = "Offline • check Wi-Fi";
   }
 }
