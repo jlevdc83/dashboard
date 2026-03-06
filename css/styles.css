@@ -364,3 +364,123 @@ html, body{
   font-weight:700;
 }
 
+
+
+/* v44 dynamic action card sizing */
+.actionsGrid{
+  align-content:start;
+}
+
+.actionsGrid .card{
+  min-height:0;
+}
+
+.action{
+  height:auto;
+}
+
+/* Portrait: auto rows so card height grows with content instead of clipping */
+@media (orientation: portrait){
+  .layout{
+    grid-template-rows:auto 1fr;
+  }
+
+  .actionsGrid{
+    grid-template-columns:1fr 1fr;
+    grid-auto-rows:auto;
+    align-items:stretch;
+  }
+
+  .actionsGrid .card{
+    height:auto;
+    min-height:132px;
+  }
+
+  .wearCard{
+    min-height:160px;
+  }
+
+  .wearDetails{
+    margin-top:8px;
+    font-size:11px;
+    line-height:1.28;
+  }
+}
+
+/* Landscape: keep equal-height stack */
+@media (orientation: landscape){
+  .actionsGrid{
+    grid-auto-rows:minmax(0, 1fr);
+    align-content:stretch;
+  }
+
+  .actionsGrid .card{
+    height:100%;
+  }
+}
+
+/* Prevent overflow clipping on long wear copy */
+#jacketValue,
+#wearValue,
+#wearSub,
+#wearDetailLine,
+#bringValue,
+#bringSub,
+#walkPrimary,
+#walkSecondary,
+#walkTertiary{
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+}
+
+
+/* v45 Liquid Glass title refinement */
+
+.cardLabel{
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  font-weight:800;
+  background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.55));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  opacity:.9;
+}
+
+
+
+
+
+/* v46 Apple-native liquid titles with emoji separation */
+
+.actionValue,
+.jacketPrimary,
+.nowCard .temp{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+}
+
+.emoji{
+  font-size:1em;
+  line-height:1;
+  -webkit-text-fill-color:initial;
+  background:none;
+}
+
+.liquidText{
+  background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.65));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.25),
+    0 10px 28px rgba(0,0,0,.30);
+}
+
+.cardLabel{
+  background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.55));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+

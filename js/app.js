@@ -1,4 +1,4 @@
-const VERSION = "v42";
+const VERSION = "v46";
 const REFRESH_MS = 20 * 60 * 1000;
 const RUN_HOT = true;
 
@@ -240,7 +240,7 @@ function bringEmojiForItems(items){
   return "";
 }
 
-function clothingPlan(tempF, feelsLikeF, windMph, rainNear){
+function clothingPlan(tempF, feelsLikeF, windMph, rainingNow){
   const t = feelsLikeF + (RUN_HOT ? 4 : 0);
   let clothes = "";
   let jacket = "No jacket";
@@ -250,7 +250,7 @@ function clothingPlan(tempF, feelsLikeF, windMph, rainNear){
   else if (t >= 48) clothes = "pants + long sleeves";
   else clothes = "warm layers";
 
-  if (rainNear >= 40) jacket = t <= 50 ? "Rain jacket over layers" : "Rain jacket";
+  if (rainingNow) jacket = t <= 50 ? "Rain jacket over layers" : "Rain jacket";
   else if (windMph >= 18 && t <= 62) jacket = "Windbreaker";
   else if (t <= 32) jacket = "Heavy winter coat";
   else if (t <= 42) jacket = "Heavy jacket";
@@ -391,6 +391,7 @@ async function refresh(){
     const temp = h.temperature_2m[idx];
     const feels = h.apparent_temperature[idx];
     const rain4h = maxNextN(h.precipitation_probability, idx, 4);
+    const rainingNow = (h.precipitation?.[idx] ?? 0) > 0;
     const uvNow = h.uv_index[idx];
     const uv4h = maxNextN(h.uv_index, idx, 4);
     const cloud = h.cloudcover[idx];
@@ -407,7 +408,7 @@ async function refresh(){
     updateClock();
     renderVersionTag();
 
-    $("tempNow").textContent = `${round(temp)}°`;
+    $("tempNow").innerHTML = `<span class="liquidText">${round(temp)}°</span>`;
     $("feelsNow").textContent = `feels ${round(feels)}°`;
     $("modeBadge").textContent = weatherEmoji(weatherCode, isDay);
     $("conditionLine").textContent = conditionText(weatherCode);
@@ -420,14 +421,14 @@ async function refresh(){
       { k: "Wind", v: `${round(wind)} mph`, b: "current" }
     ]);
 
-    const wear = clothingPlan(temp, feels, wind, rainNear);
+    const wear = clothingPlan(temp, feels, wind, rainingNow);
 
     const wearEmoji = wearEmojiForJacket(wear.jacket);
-    $("jacketValue").textContent = wearEmoji ? `${wearEmoji} ${wear.jacket}` : wear.jacket;
+    $("jacketValue").innerHTML = wearEmoji ? `<span class="emoji">${wearEmoji}</span><span class="liquidText">${wear.jacket}</span>` : `<span class="liquidText">${wear.jacket}</span>`;
     $("wearValue").textContent = wear.clothes;
 
     let extraDetail = "";
-    if (rainNear >= 50) extraDetail = "Rain likely — stay waterproof.";
+    if (rainingNow) extraDetail = "Raining now — stay waterproof.";
     else if (wind >= 18) extraDetail = "Wind noticeable — outer layer helps.";
     else if (feels >= 75) extraDetail = "Warm out — breathable fabrics.";
     else if (feels <= 40) extraDetail = "Cold — insulate well.";
@@ -446,7 +447,7 @@ async function refresh(){
     $("bringCard").classList.toggle("hidden", bring.length === 0);
     if (bring.length) {
       const bringEmoji = bringEmojiForItems(bring);
-      $("bringValue").textContent = bringEmoji ? `${bringEmoji} ${bring.join(" + ")}` : bring.join(" + ");
+      $("bringValue").innerHTML = bringEmoji ? `<span class="emoji">${bringEmoji}</span><span class="liquidText">${bring.join(" + ")}</span>` : `<span class="liquidText">${bring.join(" + ")}</span>`;
       if (bring.includes("Umbrella")) {
         const rainInfo = rainTimingSummary(horizon);
         $("bringSub").textContent = `${rainInfo.line1} • ${rainInfo.line2}`;
