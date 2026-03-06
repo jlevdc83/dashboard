@@ -427,7 +427,7 @@ async function refresh(){
       { k: "UV", v: isDay ? `${round(uvNow)}` : "—", b: isDay ? `max ${round(uv4h)}` : "Night" },
       { k: "Next sun", v: nextSun ? `${nextSun.label} ${fmtShortTime(nextSun.time)}` : "—", b: `Hi ${round(hi)}° / Lo ${round(lo)}°` },
       { k: "Rain", v: `${round(rain4h)}%`, b: "next 4h" },
-      °`, b: "current" }
+      { k: "Feels", v: `${round(feels)}°`, b: "current" }
     ]);
 
     const wear = clothingPlan(temp, feels, wind, rainNear);

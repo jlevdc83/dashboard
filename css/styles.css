@@ -508,12 +508,11 @@ html, body{ background-color:#0b0d18; }
 }
 
 
-/* v30 reduce Now card visual noise */
-
-/* Make stats more subtle */
+/* v31 safe refinement: quieter Now card, stronger action hierarchy */
 .stats{
   margin-top:10px;
   gap:8px 10px;
+  opacity:.84;
 }
 
 .stat{
@@ -537,7 +536,6 @@ html, body{ background-color:#0b0d18; }
   opacity:.6;
 }
 
-/* Slightly reduce temp dominance */
 .temp{
   font-size:60px;
   letter-spacing:-0.06em;
@@ -547,7 +545,6 @@ html, body{ background-color:#0b0d18; }
   font-size:17px;
 }
 
-/* Visually elevate action cards slightly more */
 .actionsGrid .card{
   transform: translateY(-1px);
   box-shadow:
@@ -555,14 +552,7 @@ html, body{ background-color:#0b0d18; }
     0 1px 0 rgba(255,255,255,.05) inset;
 }
 
-/* Make action card labels slightly stronger */
 .cardLabel{
   opacity:.85;
   font-weight:800;
 }
-
-/* Subtle fade of Now lower section */
-.stats{
-  opacity:.85;
-}
-
