@@ -561,3 +561,22 @@ html, body{
     0 1px 0 rgba(255,255,255,.18),
     0 10px 24px rgba(0,0,0,.28);
 }
+
+
+/* v55 — taller bottom cards to prevent text cutoff */
+.actionsGrid .card{
+  min-height:180px;
+}
+
+@media (orientation: portrait){
+  .actionsGrid .card{
+    min-height:200px;
+  }
+}
+
+@media (orientation: landscape){
+  .actionsGrid .card{
+    min-height:160px;
+  }
+}
+

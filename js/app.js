@@ -1,4 +1,4 @@
-const VERSION = "v54";
+const VERSION = "v55";
 const REFRESH_MS = 20 * 60 * 1000;
 const RUN_HOT = true;
 
