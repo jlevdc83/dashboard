@@ -1,4 +1,4 @@
-const VERSION = "v52";
+const VERSION = "v53";
 const REFRESH_MS = 20 * 60 * 1000;
 const RUN_HOT = true;
 
@@ -326,15 +326,24 @@ function dryWindowCountdown(horizon){
   }
   return "Dry for the next couple hours";
 }
-function walkDecision(feelsLikeF, precipProb, pawRisk){
+function walkDecision(feelsLikeF, precipProb, pawRisk, rainingNow, windMph, horizon){
   const t = feelsLikeF + (RUN_HOT ? 4 : 0);
-  if (precipProb >= 50) return { label: "⏳ Wait now", cls: "walk-rain-alert" };
+
+  // Only block for real current issues or clearly unsafe conditions
+  if (rainingNow) return { label: "⏳ Wait now", cls: "walk-rain-alert" };
   if (pawRisk.level === "high") return { label: "🔥 Wait now", cls: "walk-paw" };
-  if (t >= 82) return { label: "⏳ Wait now", cls: "walk-warm" };
-  if (t >= 72) return { label: "🚶 Go soon", cls: "walk-warm" };
+  if (windMph >= 30) return { label: "⏳ Wait now", cls: "walk-cold" };
+  if (t >= 95) return { label: "🔥 Wait now", cls: "walk-paw" };
+  if (t <= 20) return { label: "⏳ Wait now", cls: "walk-cold" };
+
+  // Future rain should advise, not block, unless it's very imminent
+  if (horizon.firstRainMins !== null && horizon.firstRainMins <= 20 && horizon.peak90 >= 70) {
+    return { label: "🚶 Go now", cls: "walk-warm" };
+  }
+  if (t >= 82) return { label: "🚶 Go soon", cls: "walk-warm" };
   if (t >= 55) return { label: "🐾 Walk now", cls: "walk-ideal" };
-  if (t >= 45) return { label: "🐕 Okay now", cls: "walk-cold" };
-  return { label: "⏳ Wait now", cls: "walk-cold" };
+  if (t >= 40) return { label: "🐕 Okay now", cls: "walk-cold" };
+  return { label: "🐕 Okay now", cls: "walk-cold" };
 }
 function nextSunEvent(daily, now){
   const candidates = [];
@@ -356,21 +365,40 @@ function pawWipeNeeded(hourly, idx, horizon){
 }
 function walkAssessment(hourly, idx, now, nextSun, tempF, isDay, cloud, uv, horizon){
   const pawRisk = estimatePawRisk(tempF, isDay, cloud, uv);
-  const decision = walkDecision(hourly.apparent_temperature[idx], hourly.precipitation_probability[idx] ?? 0, pawRisk);
-  let secondary = dryWindowCountdown(horizon);
-  let tertiary = pawRisk.label;
-  let cls = decision.cls;
+  const rainingNow = (hourly.precipitation?.[idx] ?? 0) > 0;
+  const windNow = hourly.windspeed_10m?.[idx] ?? 0;
+  const decision = walkDecision(
+    hourly.apparent_temperature[idx],
+    hourly.precipitation_probability[idx] ?? 0,
+    pawRisk,
+    rainingNow,
+    windNow,
+    horizon
+  );
 
-  if (nextSun && decision.label.includes("Walk now")) {
+  let secondary = "Good right now";
+  if (horizon.firstRainMins !== null) {
+    const mins = horizon.firstRainMins;
+    if (mins <= 5) secondary = "Rain starting now";
+    else if (mins < 60) secondary = `Rain in ~${mins}m`;
+    else secondary = `Rain later • ~${Math.round(mins/60)}h`;
+  } else if (nextSun && decision.label.includes("Walk now")) {
     const minutesToSun = Math.round((nextSun.time - now) / 60000);
     if (minutesToSun > 0 && minutesToSun <= 75) {
-      cls = "walk-golden";
-      tertiary = `Great light soon • ${pawRisk.label}`;
+      secondary = "Great light soon";
     }
+  } else if (decision.label.includes("Go soon")) {
+    secondary = "Better before it gets warmer";
   }
 
+  let tertiary = pawRisk.label;
   if (pawWipeNeeded(hourly, idx, horizon)) {
     tertiary += " • Wipe paws after";
+  }
+
+  let cls = decision.cls;
+  if (secondary === "Great light soon" && decision.label.includes("Walk now")) {
+    cls = "walk-golden";
   }
 
   return { primary: decision.label, secondary, tertiary, cls };
