@@ -484,3 +484,37 @@ html, body{
   -webkit-text-fill-color:transparent;
 }
 
+
+
+/* v47 sleep overlay */
+.sleepOverlay{
+  position:fixed;
+  inset:0;
+  background:#000;
+  z-index:9999;
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-end;
+  padding:
+    max(10px, env(safe-area-inset-top))
+    max(10px, env(safe-area-inset-right))
+    max(10px, env(safe-area-inset-bottom))
+    max(10px, env(safe-area-inset-left));
+}
+.sleepDismiss{
+  appearance:none;
+  border:0;
+  background:rgba(255,255,255,.10);
+  color:rgba(255,255,255,.82);
+  width:26px;
+  height:26px;
+  border-radius:999px;
+  font-size:16px;
+  line-height:26px;
+  text-align:center;
+  font-weight:500;
+  padding:0;
+}
+.sleepDismiss:active{
+  background:rgba(255,255,255,.16);
+}
