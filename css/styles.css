@@ -280,3 +280,88 @@ body.wx-fog .orb1, body.wx-cloud .orb1{background:rgba(255,255,255,.12)}
 
 
 html, body{ background-color:#0b0d18; }
+
+
+/* v25 headline card */
+.headlineCard{
+  padding:16px 18px;
+}
+.headlineLabel{
+  font-size:10px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--soft);
+  font-weight:760;
+}
+.headlineTitle{
+  margin-top:8px;
+  font-size:20px;
+  line-height:1.12;
+  font-weight:780;
+  letter-spacing:-0.02em;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.headlineMeta{
+  margin-top:8px;
+  font-size:11px;
+  color:var(--muted);
+  font-weight:680;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* portrait flow with headline under now */
+.layout{
+  grid-template-rows:auto auto 1fr;
+}
+@media (orientation:landscape){
+  .layout{
+    grid-template-columns:minmax(320px,.92fr) minmax(0,1.18fr);
+    grid-template-rows:auto 1fr;
+  }
+  .headlineCard{
+    grid-column:1;
+    grid-row:2;
+  }
+  .actionsGrid{
+    grid-column:2;
+    grid-row:1 / span 2;
+  }
+  .nowCard{
+    grid-column:1;
+    grid-row:1;
+  }
+}
+
+
+/* v26 rotating headline sources */
+.headlineTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.headlineLogo{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--soft);
+  font-weight:800;
+  padding:6px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.06);
+}
+.headlineSource{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:right;
+}

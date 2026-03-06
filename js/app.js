@@ -158,6 +158,59 @@ async function getLocation(){
     );
   });
 }
+
+async function reverseGeocode(lat, lon){
+  try {
+    const url = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&count=1&language=en&format=json&t=${Date.now()}`;
+    const r = await fetch(url, { cache: "no-store" });
+    const j = await r.json();
+    const hit = j?.results?.[0];
+    if (!hit) return "";
+    return `${hit.name}${hit.admin1 ? ", " + hit.admin1 : ""}`;
+  } catch {
+    return "";
+  }
+}
+
+async function fetchNprHeadline(){
+  const feed = "https://feeds.npr.org/1001/rss.xml";
+  const attempts = [
+    `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(feed)}`
+  ];
+
+  // Try JSON feed first
+  try {
+    const r = await fetch(attempts[0], { cache: "no-store" });
+    const j = await r.json();
+    const item = j?.items?.[0];
+    if (item) {
+      return {
+        title: item.title || "NPR top headline unavailable",
+        meta: item.pubDate ? `Top headline • ${new Date(item.pubDate).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}` : "Top headline"
+      };
+    }
+  } catch {}
+
+  // Fallback to XML via proxy
+  try {
+    const r = await fetch(attempts[1], { cache: "no-store" });
+    const txt = await r.text();
+    const xml = new DOMParser().parseFromString(txt, "text/xml");
+    const item = xml.querySelector("channel > item");
+    const title = item?.querySelector("title")?.textContent?.trim();
+    const pubDate = item?.querySelector("pubDate")?.textContent?.trim();
+    if (title) {
+      return {
+        title,
+        meta: pubDate ? `Top headline • ${new Date(pubDate).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}` : "Top headline"
+      };
+    }
+  } catch {}
+
+  return { title: "NPR headline unavailable", meta: "Unable to load feed" };
+}
+
 async function fetchForecast(lat, lon){
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const url =
@@ -170,8 +223,13 @@ async function fetchForecast(lat, lon){
   const r = await fetch(url, { cache: "no-store" });
   return r.json();
 }
-function setZipMeta(zip){
-  $("zipMeta").textContent = zip ? `ZIP ${zip}` : "ZIP —";
+function setZipMeta(value){
+  const text = String(value || "").trim();
+  if (!text) {
+    $("zipMeta").textContent = "Location —";
+    return;
+  }
+  $("zipMeta").textContent = /^\d{5}$/.test(text) ? `ZIP ${text}` : text;
 }
 function setStats(items){
   $("stats").innerHTML = items.map(item => `
@@ -321,12 +379,22 @@ function walkAssessment(hourly, idx, now, nextSun, tempF, isDay, cloud, uv, hori
   return { primary: decision.label, secondary, tertiary, cls };
 }
 
+
+function setHeadlineCard(headline){
+  const titleEl = $("headlineTitle");
+  const metaEl = $("headlineMeta");
+  if (titleEl) titleEl.textContent = headline?.title || "NPR headline unavailable";
+  if (metaEl) metaEl.textContent = headline?.meta || "Top headline";
+}
+
 async function refresh(){
   try {
     const now = new Date();
     const loc = await getLocation();
-    setZipMeta(loc.zip || localStorage.getItem("dashboard_zip") || "");
-    const forecast = await fetchForecast(loc.lat, loc.lon);
+    const cityName = !loc.zip ? await reverseGeocode(loc.lat, loc.lon) : "";
+    setZipMeta(loc.zip || cityName || localStorage.getItem("dashboard_zip") || "");
+    const [forecast, headlines] = await Promise.all([fetchForecast(loc.lat, loc.lon), fetchTopHeadlines()]);
+    setHeadlineRotation(headlines);
 
     const h = forecast.hourly;
     const d = forecast.daily;
@@ -364,9 +432,9 @@ async function refresh(){
     ]);
 
     const wear = clothingPlan(temp, feels, wind, rainNear);
-    $("jacketValue").textContent = `🧥 ${wear.jacket}`;
-    $("wearValue").textContent = `👕 ${wear.clothes}`;
-    $("wearSub").textContent = wear.sub ? `🧣 ${wear.sub}` : "";
+    $("jacketValue").textContent = wear.jacket;
+    $("wearValue").textContent = wear.clothes;
+    $("wearSub").textContent = wear.sub || "";
 
     const bring = bringPlan(temp, feels, wind, horizon);
     const showBring = bring.length > 0;
@@ -396,8 +464,8 @@ async function refresh(){
     if (walk.cls) walkCard.classList.add(walk.cls);
     const walkEmoji = walkEmojiForDecision(walk.primary, walk.tertiary);
     $("walkPrimary").textContent = `${walkEmoji} ${walk.primary}`;
-    $("walkSecondary").textContent = `☔ ${walk.secondary}`;
-    $("walkTertiary").textContent = walk.tertiary.includes("Wipe paws") ? `🧻 ${walk.tertiary}` : `🐾 ${walk.tertiary}`;
+    $("walkSecondary").textContent = walk.secondary;
+    $("walkTertiary").textContent = walk.tertiary;
 
     lastRefreshTime = Date.now();
     updateMinutesSince();
@@ -408,6 +476,7 @@ async function refresh(){
     $("conditionLine").textContent = "Enable location or enter ZIP";
     $("ambientLine").textContent = "Weather can’t load without a location";
     setZipMeta(localStorage.getItem("dashboard_zip") || "");
+    setHeadlineRotation([{ source: "News", logo: "NEWS", title: "Headline unavailable", meta: "Unable to load feed" }]);
   }
 }
 
