@@ -421,10 +421,26 @@ async function refresh(){
     ]);
 
     const wear = clothingPlan(temp, feels, wind, rainNear);
+
     const wearEmoji = wearEmojiForJacket(wear.jacket);
     $("jacketValue").textContent = wearEmoji ? `${wearEmoji} ${wear.jacket}` : wear.jacket;
     $("wearValue").textContent = wear.clothes;
+
+    let extraDetail = "";
+    if (rainNear >= 50) extraDetail = "Rain likely — stay waterproof.";
+    else if (wind >= 18) extraDetail = "Wind noticeable — outer layer helps.";
+    else if (feels >= 75) extraDetail = "Warm out — breathable fabrics.";
+    else if (feels <= 40) extraDetail = "Cold — insulate well.";
+
     $("wearSub").textContent = wear.sub || "";
+    if (!$("wearDetailLine")){
+      const detail = document.createElement("div");
+      detail.className = "wearDetails";
+      detail.id = "wearDetailLine";
+      $("wearCard").appendChild(detail);
+    }
+    $("wearDetailLine").innerHTML = extraDetail ? `<strong>Tip:</strong> ${extraDetail}` : "";
+
 
     const bring = bringPlan(temp, feels, wind, horizon);
     $("bringCard").classList.toggle("hidden", bring.length === 0);
