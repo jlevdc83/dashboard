@@ -489,7 +489,7 @@ html, body{
 /* v48 — larger hero time, quieter temperature */
 #timeNow{
   font-size:56px;
-  font-weight:800;
+  font-weight:700;
   letter-spacing:-0.03em;
   line-height:1;
   margin-bottom:4px;
@@ -529,23 +529,25 @@ html, body{
 
 
 /* v50 — softer Apple-like AM/PM */
+/* v52 — Apple-accurate AM/PM */
 .ampm{
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:.06em;
-  opacity:.38;
-  vertical-align:super;
-  position:relative;
-  top:-0.08em;
+  font-size:18px;
+  font-weight:500;
+  letter-spacing:-0.01em;
+  opacity:0.55;
   margin-left:2px;
-  -webkit-text-fill-color:rgba(255,255,255,.55);
+  position:relative;
+  top:0;
+  vertical-align:baseline;
+  -webkit-text-fill-color:rgba(255,255,255,0.65);
+  background:none;
   text-shadow:none;
 }
 
 @media (orientation: landscape){
   .ampm{
-    font-size:12px;
-    opacity:.34;
+    font-size:20px;
+    opacity:0.5;
   }
 }
 
