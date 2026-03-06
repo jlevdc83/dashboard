@@ -393,8 +393,7 @@ async function refresh(){
     const loc = await getLocation();
     const cityName = !loc.zip ? await reverseGeocode(loc.lat, loc.lon) : "";
     setZipMeta(loc.zip || cityName || localStorage.getItem("dashboard_zip") || "");
-    const [forecast, headlines] = await Promise.all([fetchForecast(loc.lat, loc.lon), fetchTopHeadlines()]);
-    setHeadlineRotation(headlines);
+    const forecast = await fetchForecast(loc.lat, loc.lon);
 
     const h = forecast.hourly;
     const d = forecast.daily;
@@ -476,7 +475,7 @@ async function refresh(){
     $("conditionLine").textContent = "Enable location or enter ZIP";
     $("ambientLine").textContent = "Weather can’t load without a location";
     setZipMeta(localStorage.getItem("dashboard_zip") || "");
-    setHeadlineRotation([{ source: "News", logo: "NEWS", title: "Headline unavailable", meta: "Unable to load feed" }]);
+
   }
 }
 
