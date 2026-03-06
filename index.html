@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#0b0d18" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Leave the House</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="bgScene">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+    <div class="grain"></div>
+  </div>
+
+  <div class="app">
+    <main class="layout">
+      <section class="card nowCard">
+        <div class="topRow">
+          <div class="topMeta">
+            <div class="timeNow" id="timeNow">--:--</div>
+            <div class="updatedMeta">
+              <span id="updatedLine">Updated —</span>
+              <span class="dot">•</span>
+              <span id="zipMeta">ZIP —</span>
+            </div>
+          </div>
+          <div class="modeBadge" id="modeBadge">☀️</div>
+        </div>
+
+        <div class="tempRow">
+          <div class="temp" id="tempNow">—°</div>
+          <div class="feels" id="feelsNow">feels —°</div>
+        </div>
+
+        <div class="condition" id="conditionLine">—</div>
+        <div class="ambient" id="ambientLine">—</div>
+
+        <div class="stats" id="stats"></div>
+      </section>
+
+      <section class="actionsGrid">
+        <section class="card action wearCard" id="wearCard">
+          <div class="cardLabel">Wear</div>
+          <div class="actionValue jacketPrimary" id="jacketValue">—</div>
+          <div class="actionSub clothesSecondary" id="wearValue">—</div>
+          <div class="actionSub tertiary" id="wearSub">—</div>
+        </section>
+
+        <section class="card action hidden" id="protectCard">
+          <div class="cardLabel">Protect</div>
+          <div class="actionValue" id="protectValue">—</div>
+          <div class="actionSub" id="protectSub">—</div>
+        </section>
+
+        <section class="card action hidden" id="bringCard">
+          <div class="cardLabel">Bring</div>
+          <div class="actionValue" id="bringValue">—</div>
+          <div class="actionSub" id="bringSub">—</div>
+        </section>
+
+        <section class="card action walkCard" id="walkCard">
+          <div class="cardLabel">Dog Walk</div>
+          <div class="actionValue" id="walkPrimary">—</div>
+          <div class="actionSub" id="walkSecondary">—</div>
+          <div class="actionSub tertiary" id="walkTertiary">—</div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+</html>
