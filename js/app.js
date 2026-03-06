@@ -1,4 +1,3 @@
-const FALLBACK = { lat: 38.9072, lon: -77.0369 };
 const REFRESH_MS = 20 * 60 * 1000;
 const RUN_HOT = true;
 
@@ -229,8 +228,49 @@ function walkAssessment(hourly, idx, now, nextSun, tempF, isDay, cloud, uv, hori
 
   return { primary, secondary, tertiary, cls, icon };
 }
+async function geocodeZip(zip){
+  const clean = String(zip || "").trim();
+  if (!clean) throw new Error("ZIP_REQUIRED");
+  const url = `https://geocoding-api.open-meteo.com/v1/search?postalcode=${encodeURIComponent(clean)}&country=US&count=1&format=json&t=${Date.now()}`;
+  const r = await fetch(url, { cache: "no-store" });
+  const j = await r.json();
+  const hit = j?.results?.[0];
+  if (!hit) throw new Error("ZIP_NOT_FOUND");
+  return { lat: hit.latitude, lon: hit.longitude };
+}
+
+async function fallbackToZip(){
+  let zip = localStorage.getItem("dashboard_zip") || "";
+  if (!zip) {
+    zip = window.prompt("Location unavailable. Enter your local ZIP code:");
+    if (!zip) throw new Error("LOCATION_REQUIRED");
+    localStorage.setItem("dashboard_zip", zip.trim());
+  }
+
+  try {
+    return await geocodeZip(zip);
+  } catch (e) {
+    localStorage.removeItem("dashboard_zip");
+    const retryZip = window.prompt("ZIP not recognized. Re-enter your local ZIP code:");
+    if (!retryZip) throw new Error("LOCATION_REQUIRED");
+    localStorage.setItem("dashboard_zip", retryZip.trim());
+    return await geocodeZip(retryZip);
+  }
+}
+
 async function getLocation(){
-  return { lat: FALLBACK.lat, lon: FALLBACK.lon };
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      fallbackToZip().then(resolve).catch(reject);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      () => fallbackToZip().then(resolve).catch(reject),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
+    );
+  });
 }
 async function fetchForecast(lat, lon){
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -345,7 +385,17 @@ async function refresh(){
     scheduleTickers();
   } catch (e) {
     console.error(e);
-    $("updatedLine").textContent = "Offline";
+    if (e && (e.message === "LOCATION_REQUIRED" || e.message === "ZIP_REQUIRED" || e.message === "ZIP_NOT_FOUND")) {
+      $("updatedLine").textContent = "Location needed";
+      const tempEl = $("tempNow");
+      const conditionEl = $("conditionLine");
+      const ambientEl = $("ambientLine");
+      if (tempEl) tempEl.textContent = "—°";
+      if (conditionEl) conditionEl.textContent = "Enable location or enter ZIP";
+      if (ambientEl) ambientEl.textContent = "Weather can’t load without a location";
+    } else {
+      $("updatedLine").textContent = "Offline";
+    }
   }
 }
 
@@ -353,3 +403,9 @@ refresh();
 clearInterval(refreshTimer);
 refreshTimer = setInterval(refresh, REFRESH_MS);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+
+
+window.clearSavedZip = function(){
+  localStorage.removeItem("dashboard_zip");
+  location.reload();
+};
