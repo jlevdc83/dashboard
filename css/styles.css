@@ -506,3 +506,63 @@ html, body{ background-color:#0b0d18; }
     animation:none !important;
   }
 }
+
+
+/* v30 reduce Now card visual noise */
+
+/* Make stats more subtle */
+.stats{
+  margin-top:10px;
+  gap:8px 10px;
+}
+
+.stat{
+  padding:6px 8px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.statLabel{
+  font-size:9px;
+  opacity:.65;
+}
+
+.statValue{
+  font-size:13px;
+  font-weight:700;
+}
+
+.statSub{
+  font-size:10px;
+  opacity:.6;
+}
+
+/* Slightly reduce temp dominance */
+.temp{
+  font-size:60px;
+  letter-spacing:-0.06em;
+}
+
+.condition{
+  font-size:17px;
+}
+
+/* Visually elevate action cards slightly more */
+.actionsGrid .card{
+  transform: translateY(-1px);
+  box-shadow:
+    0 18px 34px rgba(0,0,0,.22),
+    0 1px 0 rgba(255,255,255,.05) inset;
+}
+
+/* Make action card labels slightly stronger */
+.cardLabel{
+  opacity:.85;
+  font-weight:800;
+}
+
+/* Subtle fade of Now lower section */
+.stats{
+  opacity:.85;
+}
+
