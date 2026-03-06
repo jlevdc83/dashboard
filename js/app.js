@@ -1,3 +1,4 @@
+const VERSION = "v40";
 const REFRESH_MS = 20 * 60 * 1000;
 const RUN_HOT = true;
 
@@ -18,6 +19,11 @@ function updateMinutesSince(){
 }
 function updateClock(){
   $("timeNow").textContent = new Intl.DateTimeFormat([], { hour: "numeric", minute: "2-digit" }).format(new Date());
+}
+
+function renderVersionTag(){
+  const el = $("buildMeta");
+  if (el) el.textContent = VERSION;
 }
 function scheduleTickers(){
   clearInterval(minuteTimer);
@@ -399,6 +405,7 @@ async function refresh(){
 
     applyScene(now, d.sunrise?.[0], d.sunset?.[0], weatherCode);
     updateClock();
+    renderVersionTag();
 
     $("tempNow").textContent = `${round(temp)}°`;
     $("feelsNow").textContent = `feels ${round(feels)}°`;
@@ -470,3 +477,6 @@ window.clearSavedZip = function(){
 
 
 updateThemeColor("phase-night", 0);
+
+
+renderVersionTag();
