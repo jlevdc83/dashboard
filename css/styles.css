@@ -20,7 +20,11 @@ body{
 }
 .app{
   height:100dvh;
-  padding:max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  padding:
+    max(8px, env(safe-area-inset-top))
+    max(8px, env(safe-area-inset-right))
+    max(8px, env(safe-area-inset-bottom))
+    max(18px, calc(env(safe-area-inset-left) + 14px));
 }
 .layout{
   height:100%;
@@ -318,3 +322,103 @@ body{
   letter-spacing:-0.01em;
   opacity:.92;
 }
+
+
+/* v14 hierarchy: jacket first */
+#wearCard #jacketValue{
+  font-size:24px;
+}
+#wearCard #wearValue{
+  font-size:13px;
+  color:var(--muted);
+  font-weight:700;
+}
+#wearCard #wearSub{
+  font-size:10px;
+}
+@media (max-height:420px){
+  #wearCard #jacketValue{font-size:21px;}
+  #wearCard #wearValue{font-size:12px;}
+}
+
+
+/* ===== v17 Premium Refinement ===== */
+
+/* Stronger hierarchy */
+.actionValue{
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:-0.02em;
+}
+
+.actionSub{
+  font-size:12px;
+  opacity:.75;
+}
+
+.actionSubTertiary{
+  font-size:11px;
+  opacity:.6;
+}
+
+.actionLabel{
+  font-size:10px;
+  letter-spacing:.14em;
+  opacity:.55;
+}
+
+/* Make jacket dominant */
+#jacketValue{
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:-0.03em;
+}
+
+/* Make clothes smaller and quieter */
+#wearValue{
+  font-size:13px;
+  opacity:.7;
+  font-weight:600;
+}
+
+/* Now card more restrained */
+.nowCard .temp{
+  font-size:56px;
+}
+
+.nowCard .condition{
+  font-size:16px;
+  opacity:.85;
+}
+
+.nowCard .ambient{
+  font-size:11px;
+  opacity:.55;
+}
+
+/* Remove excessive glow intensity */
+.walk-ideal,
+.walk-golden,
+.walk-warm,
+.walk-cold,
+.walk-paw{
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+}
+
+/* Subtle premium card surface */
+.card{
+  background:
+    radial-gradient(240px 120px at 15% 0%, rgba(255,255,255,.10), transparent 65%),
+    rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.10);
+}
+
+/* Slightly more breathing room */
+.layout{
+  gap:12px;
+}
+
+.actionsStack{
+  gap:12px;
+}
+
