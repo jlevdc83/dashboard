@@ -1,4 +1,4 @@
-const VERSION = "v47";
+const VERSION = "v48";
 const REFRESH_MS = 20 * 60 * 1000;
 const RUN_HOT = true;
 
@@ -7,29 +7,6 @@ let lastRefreshTime = null;
 let refreshTimer = null;
 let minuteTimer = null;
 let clockTimer = null;
-
-let sleepDismissedUntil = 0;
-
-function isSleepWindow(now = new Date()){
-  const h = now.getHours();
-  return h >= 23 || h < 6;
-}
-
-function updateSleepOverlay(){
-  const overlay = $("sleepOverlay");
-  if (!overlay) return;
-  const now = Date.now();
-  const inSleep = isSleepWindow(new Date(now));
-  const dismissed = now < sleepDismissedUntil;
-  overlay.classList.toggle("hidden", !(inSleep && !dismissed));
-  overlay.setAttribute("aria-hidden", overlay.classList.contains("hidden") ? "true" : "false");
-}
-
-function dismissSleepOverlay(){
-  sleepDismissedUntil = Date.now() + (15 * 60 * 1000);
-  updateSleepOverlay();
-}
-
 
 function round(n){ return Math.round(n); }
 function fmtShortTime(date){
@@ -42,7 +19,6 @@ function updateMinutesSince(){
 }
 function updateClock(){
   $("timeNow").textContent = new Intl.DateTimeFormat([], { hour: "numeric", minute: "2-digit" }).format(new Date());
-  updateSleepOverlay();
 }
 
 function renderVersionTag(){
@@ -431,7 +407,6 @@ async function refresh(){
     applyScene(now, d.sunrise?.[0], d.sunset?.[0], weatherCode);
     updateClock();
     renderVersionTag();
-    updateSleepOverlay();
 
     $("tempNow").innerHTML = `<span class="liquidText">${round(temp)}°</span>`;
     $("feelsNow").textContent = `feels ${round(feels)}°`;
@@ -522,11 +497,3 @@ updateThemeColor("phase-night", 0);
 
 
 renderVersionTag();
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const dismiss = $("sleepDismiss");
-  if (dismiss) dismiss.addEventListener("click", dismissSleepOverlay);
-  renderVersionTag();
-  updateSleepOverlay();
-});
