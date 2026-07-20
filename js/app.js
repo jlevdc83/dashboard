@@ -1,4 +1,4 @@
-const VERSION = "v55";
+const VERSION = "v56";
 const REFRESH_MS = 20 * 60 * 1000;
 const RUN_HOT = true;
 
@@ -160,22 +160,63 @@ async function reverseGeocode(lat, lon){
     return "";
   }
 }
+// In-page ZIP prompt. window.prompt()/alert()/confirm() are disabled in iOS
+// "Add to Home Screen" standalone web apps (they return null with no dialog),
+// which previously left the dashboard stuck with no way to enter a location.
+function askZipViaUI(message){
+  return new Promise((resolve) => {
+    const overlay = $("zipOverlay");
+    const input = $("zipInput");
+    const submit = $("zipSubmit");
+    const msgEl = $("zipMsgLine");
+    if (!overlay || !input || !submit) {
+      // Graceful fallback if the overlay markup is missing.
+      let v = null;
+      try { v = window.prompt(message || "Enter your local ZIP code:"); } catch {}
+      resolve((v || "").trim());
+      return;
+    }
+    if (message && msgEl) msgEl.textContent = message;
+    overlay.classList.remove("hidden");
+    input.value = (localStorage.getItem("dashboard_zip") || "").trim();
+    setTimeout(() => { try { input.focus(); } catch {} }, 60);
+
+    const done = (val) => {
+      overlay.classList.add("hidden");
+      submit.removeEventListener("click", onSubmit);
+      input.removeEventListener("keydown", onKey);
+      resolve(String(val || "").trim());
+    };
+    const onSubmit = () => done(input.value);
+    const onKey = (e) => { if (e.key === "Enter") { e.preventDefault(); onSubmit(); } };
+    submit.addEventListener("click", onSubmit);
+    input.addEventListener("keydown", onKey);
+  });
+}
 async function fallbackToZip(){
-  let zip = localStorage.getItem("dashboard_zip") || "";
-  if (!zip) {
-    zip = window.prompt("Location unavailable. Enter your local ZIP code:");
+  // Try a previously saved ZIP silently first — no UI needed.
+  const saved = (localStorage.getItem("dashboard_zip") || "").trim();
+  if (saved) {
+    try {
+      return await geocodeZip(saved);
+    } catch {
+      localStorage.removeItem("dashboard_zip");
+    }
+  }
+  // Ask via the in-page dialog, retrying on unrecognized input.
+  let message = "Enter your ZIP code to load local weather.";
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const zip = await askZipViaUI(message);
     if (!zip) throw new Error("LOCATION_REQUIRED");
-    localStorage.setItem("dashboard_zip", zip.trim());
+    try {
+      const loc = await geocodeZip(zip);
+      localStorage.setItem("dashboard_zip", zip);
+      return loc;
+    } catch {
+      message = "That ZIP wasn't recognized. Please try again.";
+    }
   }
-  try {
-    return await geocodeZip(zip);
-  } catch {
-    localStorage.removeItem("dashboard_zip");
-    const retry = window.prompt("ZIP not recognized. Re-enter your local ZIP code:");
-    if (!retry) throw new Error("LOCATION_REQUIRED");
-    localStorage.setItem("dashboard_zip", retry.trim());
-    return await geocodeZip(retry);
-  }
+  throw new Error("LOCATION_REQUIRED");
 }
 function isLikelyLocalFile(){
   return window.location.protocol === "file:";
@@ -404,13 +445,38 @@ function walkAssessment(hourly, idx, now, nextSun, tempF, isDay, cloud, uv, hori
   return { primary: decision.label, secondary, tertiary, cls };
 }
 
-async function refresh(){
+function cacheReading(forecast, loc, cityName){
   try {
-    const now = new Date();
-    const loc = await getLocation();
-    const cityName = !loc.zip ? await reverseGeocode(loc.lat, loc.lon) : "";
+    localStorage.setItem("dashboard_cache", JSON.stringify({ forecast, loc, cityName: cityName || "", ts: Date.now() }));
+  } catch {}
+}
+function renderFromCache(){
+  try {
+    const raw = localStorage.getItem("dashboard_cache");
+    if (!raw) return false;
+    const c = JSON.parse(raw);
+    if (!c || !c.forecast || !c.loc) return false;
+    renderDashboard(c.forecast, c.loc, c.cityName || "", new Date());
+    lastRefreshTime = c.ts || Date.now();
+    updateMinutesSince();
+    scheduleTickers();
+    return true;
+  } catch {
+    return false;
+  }
+}
+function showLocationError(){
+  $("updatedLine").textContent = "Location needed";
+  $("conditionLine").textContent = "Tap here to enter your ZIP";
+  $("ambientLine").textContent = "Weather can’t load without a location";
+  setZipMeta(localStorage.getItem("dashboard_zip") || "");
+  const cond = $("conditionLine");
+  cond.style.cursor = "pointer";
+  cond.onclick = () => { cond.onclick = null; cond.style.cursor = ""; refresh(); };
+}
+
+function renderDashboard(forecast, loc, cityName, now){
     setZipMeta(loc.zip || cityName || localStorage.getItem("dashboard_zip") || "");
-    const forecast = await fetchForecast(loc.lat, loc.lon);
 
     const h = forecast.hourly;
     const d = forecast.daily;
@@ -498,16 +564,26 @@ async function refresh(){
     $("walkPrimary").textContent = walk.primary;
     $("walkSecondary").textContent = walk.secondary;
     $("walkTertiary").textContent = walk.tertiary;
+}
+
+async function refresh(){
+  try {
+    const now = new Date();
+    const loc = await getLocation();
+    const cityName = !loc.zip ? await reverseGeocode(loc.lat, loc.lon) : "";
+    const forecast = await fetchForecast(loc.lat, loc.lon);
+
+    renderDashboard(forecast, loc, cityName, now);
+    cacheReading(forecast, loc, cityName);
 
     lastRefreshTime = Date.now();
     updateMinutesSince();
     scheduleTickers();
   } catch (e) {
     console.error(e);
-    $("updatedLine").textContent = "Location needed";
-    $("conditionLine").textContent = "Enable location or enter ZIP";
-    $("ambientLine").textContent = "Weather can’t load without a location";
-    setZipMeta(localStorage.getItem("dashboard_zip") || "");
+    // Prefer showing the last good reading over a blank dashboard.
+    if (renderFromCache()) return;
+    showLocationError();
   }
 }
 
