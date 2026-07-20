@@ -580,3 +580,55 @@ html, body{
   }
 }
 
+
+/* v56 — in-page ZIP entry (window.prompt is disabled in iOS standalone PWAs) */
+.zipOverlay{
+  position:fixed; inset:0; z-index:50;
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  background:rgba(6,10,20,.55);
+  backdrop-filter:blur(14px) saturate(1.1);
+  -webkit-backdrop-filter:blur(14px) saturate(1.1);
+}
+.zipDialog{
+  width:100%; max-width:320px;
+  padding:22px 20px 20px;
+  border-radius:var(--radius);
+  border:1px solid rgba(255,255,255,.16);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06)),
+    rgba(20,28,46,.72);
+  box-shadow:0 24px 60px rgba(0,0,0,.42);
+  text-align:center;
+}
+.zipTitle{
+  font-size:19px; font-weight:850; letter-spacing:-.02em;
+}
+.zipMsg{
+  margin-top:8px; font-size:13px; color:var(--muted); font-weight:600; line-height:1.35;
+}
+.zipInput{
+  margin-top:16px; width:100%;
+  padding:13px 14px;
+  font-size:18px; font-weight:700; text-align:center; letter-spacing:.04em;
+  color:var(--fg);
+  border-radius:15px;
+  border:1px solid rgba(255,255,255,.20);
+  background:rgba(255,255,255,.08);
+  outline:none;
+}
+.zipInput::placeholder{ color:var(--soft); font-weight:600; letter-spacing:normal; }
+.zipInput:focus{ border-color:rgba(255,255,255,.42); background:rgba(255,255,255,.12); }
+.zipBtn{
+  margin-top:14px; width:100%;
+  padding:13px 14px;
+  font-size:16px; font-weight:800; letter-spacing:-.01em;
+  color:var(--fg);
+  border-radius:15px;
+  border:1px solid rgba(255,255,255,.20);
+  background:rgba(255,255,255,.16);
+  cursor:pointer;
+  -webkit-appearance:none; appearance:none;
+}
+.zipBtn:active{ background:rgba(255,255,255,.24); }
+
